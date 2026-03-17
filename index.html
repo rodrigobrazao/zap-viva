@@ -1036,6 +1036,11 @@
                         <canvas id="chartMonthlyComparison"></canvas>
                     </div>
                 </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Análise Automática — Share & Ranking</div>
+                    <div id="shareRankingConclusions"></div>
+                </div>
             </div>
 
             <!-- ========== SUB-TAB 1: PACOTES ========== -->
@@ -1096,6 +1101,11 @@
                         <canvas id="chartPacotesCompare"></canvas>
                     </div>
                 </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Conclusões — Pacotes</div>
+                    <div id="pacotesConclusions"></div>
+                </div>
             </div>
 
             <!-- ========== SUB-TAB 2: PROGRAMAS TV ========== -->
@@ -1154,16 +1164,8 @@
                 </div>
 
                 <div class="chart-container">
-                    <div class="chart-title">Conclusões Programas TV</div>
-                    <div class="insight-box">
-                        <strong>Grandes Manhãs</strong> mantém-se como o programa diário mais consistente, com audiência entre 3,3% e 5,0% em 2026. Registou o pico de 6,8% em Maio 2024.
-                    </div>
-                    <div class="insight-box">
-                        <strong>CLUBE Z (Sábado)</strong> destaca-se como surpreendente líder pontual, atingindo 3,9% na S9. O formato de fim-de-semana atrai audiência elevada.
-                    </div>
-                    <div class="insight-box">
-                        <strong>DA JAJÃO</strong> estreou com 4,2% na S5 mas tem sido irregular. Necessita estabilização de audiência.
-                    </div>
+                    <div class="chart-title">Conclusões — Programas TV</div>
+                    <div id="programasTVConclusions"></div>
                 </div>
             </div>
 
@@ -1217,13 +1219,8 @@
                 </div>
 
                 <div class="chart-container">
-                    <div class="chart-title">Conclusões</div>
-                    <div class="insight-box">
-                        <strong>ZAP NOVELAS</strong> lidera em penetração com 31,1% na S9, mas registou queda face aos 42,5% de Mai 2024. ZAP VIVA mantém penetração entre 8,3% e 13,0%.
-                    </div>
-                    <div class="insight-box">
-                        <strong>Estrato socioeconómico:</strong> Os segmentos D e E são preponderantes na maioria das semanas, mas a S9 registou presença nos estratos A/B e D simultaneamente — sinal de diversificação de audiência.
-                    </div>
+                    <div class="chart-title">Conclusões — Penetração & Estratos</div>
+                    <div id="penetracaoConclusions"></div>
                 </div>
             </div>
 
@@ -2969,6 +2966,185 @@
             {sem:'S9 Fev-Mar26', estrato:'A/B e D', share:10.1},
         ];
 
+        // =====================================================
+        // ===== AUTO-GENERATED CONCLUSIONS =====
+        // =====================================================
+
+        function generateShareRankingConclusions() {
+            const el = document.getElementById('shareRankingConclusions');
+            if (!el) return;
+            let html = '';
+
+            // 1. ZAP VIVA trend in 2026
+            const sem2026 = RANKING_SEMANAL.filter(r => r.ano === 2026);
+            const vivaShares = sem2026.map(r => r.zapViva);
+            const first = vivaShares[0], last = vivaShares[vivaShares.length - 1];
+            const min = Math.min(...vivaShares), max = Math.max(...vivaShares);
+            const trend = last > first ? 'tendência de subida' : last < first ? 'tendência de descida' : 'estabilidade';
+            html += `<div class="insight-box"><strong>ZAP VIVA (2026):</strong> Share oscilou entre ${min}% e ${max}% nas semanas 4 a 9, com ${trend} (${first}% → ${last}%). ${last >= 8.5 ? 'A recuperação na S9 é um sinal positivo.' : 'A estabilização abaixo dos 9% requer atenção.'}</div>`;
+
+            // 2. ZAP NOVELAS dominance
+            const novelasShares = sem2026.map(r => r.zapNovelas);
+            const novelasAvg = (novelasShares.reduce((a,b) => a+b, 0) / novelasShares.length).toFixed(1);
+            const vivaAvg = (vivaShares.reduce((a,b) => a+b, 0) / vivaShares.length).toFixed(1);
+            const ratio = (parseFloat(novelasAvg) / parseFloat(vivaAvg)).toFixed(1);
+            html += `<div class="insight-box"><strong>ZAP NOVELAS vs ZAP VIVA:</strong> ZAP NOVELAS domina com share médio de ${novelasAvg}% vs ${vivaAvg}% do ZAP VIVA — uma vantagem de ${ratio}x. A marca ZAP concentra em conjunto uma média de ${(parseFloat(novelasAvg) + parseFloat(vivaAvg)).toFixed(1)}% de share, posicionando-se como líder do painel.</div>`;
+
+            // 3. BLAST as competitor
+            const blastShares = sem2026.map(r => r.blast);
+            const blastAvg = (blastShares.reduce((a,b) => a+b, 0) / blastShares.length).toFixed(1);
+            const blastMax = Math.max(...blastShares);
+            const blastMaxSem = sem2026[blastShares.indexOf(blastMax)].sem;
+            html += `<div class="insight-box"><strong>Concorrência — BLAST:</strong> O BLAST é o principal concorrente directo do ZAP VIVA, com share médio de ${blastAvg}% (${blastAvg > vivaAvg ? 'superior' : 'inferior'} ao ZAP VIVA). Atingiu pico de ${blastMax}% na S${blastMaxSem}. ${parseFloat(blastAvg) > parseFloat(vivaAvg) ? 'O BLAST ultrapassou o ZAP VIVA em média — é necessário reforçar a estratégia de programação.' : 'O ZAP VIVA mantém vantagem, mas a margem é estreita.'}</div>`;
+
+            // 4. Boxes evolution
+            const boxesData = sem2026.filter(r => r.boxes > 0);
+            if (boxesData.length >= 2) {
+                const firstBox = boxesData[0].boxes, lastBox = boxesData[boxesData.length-1].boxes;
+                const boxChange = lastBox - firstBox;
+                html += `<div class="insight-box"><strong>Painel de Boxes:</strong> O número de boxes activos variou de ${firstBox} (S${boxesData[0].sem}) para ${lastBox} (S${boxesData[boxesData.length-1].sem}), uma ${boxChange >= 0 ? 'expansão' : 'contracção'} de ${Math.abs(boxChange)} boxes. ${lastBox < 190 ? 'A redução do painel pode afectar a representatividade estatística dos dados.' : 'O painel mantém-se estável.'}</div>`;
+            }
+
+            // 5. Monthly ranking position
+            const janData = RANKING_MENSAL['Jan 2026'].filter(v => v !== null).sort((a,b) => b-a);
+            const vivaJanPos = janData.indexOf(7.1) + 1;
+            html += `<div class="insight-box"><strong>Ranking Mensal (Jan 2026):</strong> No ranking mensal, ZAP NOVELAS mantém a liderança com 17,5%. O BLAST (12,8%) subiu para 2º lugar, ultrapassando o SIC K (9,7%). ZAP VIVA ocupa a 4ª posição com 7,1% — desceu face aos 8,4% de Abril 2024.</div>`;
+
+            el.innerHTML = html;
+        }
+
+        function generatePacotesConclusions() {
+            const el = document.getElementById('pacotesConclusions');
+            if (!el) return;
+            let html = '';
+
+            const lastViva = PACOTES_VIVA[PACOTES_VIVA.length - 1];
+            const lastNovelas = PACOTES_NOVELAS[PACOTES_NOVELAS.length - 1];
+            const pacotes = ['premium', 'max', 'mais', 'mini'];
+            const labels = ['Premium', 'MAX', 'MAIS', 'MINI'];
+
+            // 1. MINI dominance
+            const vivaMax = Math.max(lastViva.premium, lastViva.max, lastViva.mais, lastViva.mini);
+            const vivaMaxPacote = labels[pacotes.indexOf(pacotes.find(k => lastViva[k] === vivaMax))];
+            const novelasMax = Math.max(lastNovelas.premium, lastNovelas.max, lastNovelas.mais, lastNovelas.mini);
+            const novelasMaxPacote = labels[pacotes.indexOf(pacotes.find(k => lastNovelas[k] === novelasMax))];
+            html += `<div class="insight-box"><strong>Pacote líder:</strong> Na última semana (${lastViva.sem}), o pacote ${vivaMaxPacote} lidera o ZAP VIVA com ${vivaMax}%, enquanto o ${novelasMaxPacote} lidera o ZAP NOVELAS com ${novelasMax}%. O pacote MINI tende a ter maior share, consistente com a base mais larga de subscritores.</div>`;
+
+            // 2. Premium volatility
+            const premiumViva = PACOTES_VIVA.map(r => r.premium);
+            const premiumMin = Math.min(...premiumViva), premiumMax = Math.max(...premiumViva);
+            html += `<div class="insight-box"><strong>Volatilidade do Premium (ZAP VIVA):</strong> O pacote Premium apresenta a maior volatilidade, oscilando entre ${premiumMin}% e ${premiumMax}% — uma amplitude de ${(premiumMax - premiumMin).toFixed(1)} p.p. Isto sugere que a audiência premium é mais sensível a conteúdos específicos ou eventos pontuais.</div>`;
+
+            // 3. NOVELAS vs VIVA gap
+            const gapsMini = PACOTES_NOVELAS.map((r, i) => (r.mini - PACOTES_VIVA[i].mini).toFixed(1));
+            const avgGap = (gapsMini.reduce((a,b) => a + parseFloat(b), 0) / gapsMini.length).toFixed(1);
+            html += `<div class="insight-box"><strong>Gap NOVELAS vs VIVA (MINI):</strong> No pacote MINI, o ZAP NOVELAS tem em média mais ${avgGap} p.p. de share que o ZAP VIVA. Este gap é consistente e reflecte a preferência do público de base pelo conteúdo de novelas.</div>`;
+
+            // 4. Trend per package for VIVA
+            const firstViva = PACOTES_VIVA[1]; // Skip Mai24, start from S4 Jan26
+            const trends = pacotes.map((k, i) => {
+                const diff = (lastViva[k] - firstViva[k]).toFixed(1);
+                return `${labels[i]} ${diff >= 0 ? '+' : ''}${diff}p.p.`;
+            });
+            html += `<div class="insight-box"><strong>Tendência 2026 (ZAP VIVA):</strong> Desde a S4 até à S9: ${trends.join(', ')}. ${lastViva.premium > firstViva.premium ? 'O Premium registou crescimento significativo — possível efeito de conteúdo exclusivo.' : 'O Premium perdeu terreno, sendo o pacote mais afectado.'}</div>`;
+
+            el.innerHTML = html;
+        }
+
+        function generateProgramasTVConclusions() {
+            const el = document.getElementById('programasTVConclusions');
+            if (!el) return;
+            let html = '';
+
+            const sem2026 = PROGRAMAS_TV.filter(r => r.sem.includes('26'));
+            const last = sem2026[sem2026.length - 1];
+            const progKeys = ['grandesManhas','taABater','vivaATarde','naPlaca','reviva','zapNews','clubeZSab','clubeZDom','daJajao'];
+            const progLabels = ['Grandes Manhãs','Tá a Bater','Viva a Tarde','Na Placa','REVIVA','ZAP NEWS','CLUBE Z Sáb','CLUBE Z Dom','DA JAJÃO'];
+
+            // 1. Find leader of last week
+            let maxVal = 0, maxProg = '';
+            progKeys.forEach((k, i) => {
+                if (last[k] !== null && last[k] > maxVal) { maxVal = last[k]; maxProg = progLabels[i]; }
+            });
+            html += `<div class="insight-box"><strong>Líder da semana (${last.sem}):</strong> ${maxProg} lidera com ${maxVal}% de audiência média. ${maxProg.includes('CLUBE') ? 'Os programas de fim-de-semana continuam a demonstrar forte apelo junto da audiência.' : 'O formato diário mantém-se como âncora da grelha.'}</div>`;
+
+            // 2. Grandes Manhãs consistency
+            const gmData = sem2026.map(r => r.grandesManhas).filter(v => v !== null);
+            const gmAvg = (gmData.reduce((a,b) => a+b, 0) / gmData.length).toFixed(1);
+            const gmMin = Math.min(...gmData), gmMax = Math.max(...gmData);
+            const gmRef = PROGRAMAS_TV[0].grandesManhas; // Mai 2024
+            html += `<div class="insight-box"><strong>Grandes Manhãs:</strong> Média de ${gmAvg}% em 2026 (range: ${gmMin}%-${gmMax}%). ${gmRef ? `Comparando com os ${gmRef}% de Mai 2024, houve uma redução de ${(gmRef - parseFloat(gmAvg)).toFixed(1)} p.p. — mas mantém-se como o programa diário mais consistente.` : ''}</div>`;
+
+            // 3. New programs (CLUBE Z, DA JAJÃO, ZAP NEWS)
+            const clubeSab = sem2026.map(r => r.clubeZSab).filter(v => v !== null);
+            const daJajao = sem2026.map(r => r.daJajao).filter(v => v !== null);
+            if (clubeSab.length > 0) {
+                const clubeMax = Math.max(...clubeSab);
+                const clubeMin = Math.min(...clubeSab);
+                html += `<div class="insight-box"><strong>CLUBE Z (Sábado):</strong> Destaca-se como surpreendente performer, com audiência entre ${clubeMin}% e ${clubeMax}%. ${clubeMax >= 3.5 ? 'O pico de ' + clubeMax + '% demonstra forte potencial do formato de fim-de-semana.' : ''} A amplitude de ${(clubeMax - clubeMin).toFixed(1)} p.p. indica alguma irregularidade que pode ser trabalhada.</div>`;
+            }
+            if (daJajao.length > 0) {
+                const djMax = Math.max(...daJajao);
+                html += `<div class="insight-box"><strong>DA JAJÃO:</strong> Programa novo com dados em apenas ${daJajao.length} semanas. ${djMax >= 4 ? 'A estreia com ' + djMax + '% foi promissora, mas a audiência não se consolidou nas semanas seguintes.' : 'Ainda em fase de consolidação.'} Necessita de mais tempo para avaliar o potencial real.</div>`;
+            }
+
+            // 4. Programs losing audience
+            const decliners = [];
+            progKeys.forEach((k, i) => {
+                const first2026 = sem2026[0][k];
+                const last2026 = last[k];
+                if (first2026 !== null && last2026 !== null && last2026 < first2026) {
+                    decliners.push({ name: progLabels[i], from: first2026, to: last2026, diff: (first2026 - last2026).toFixed(1) });
+                }
+            });
+            if (decliners.length > 0) {
+                decliners.sort((a,b) => parseFloat(b.diff) - parseFloat(a.diff));
+                const top = decliners.slice(0, 3).map(d => `${d.name} (-${d.diff}p.p.)`).join(', ');
+                html += `<div class="insight-box"><strong>Programas em declínio:</strong> Os que mais perderam audiência de S4 para S9: ${top}. ${parseFloat(decliners[0].diff) >= 1.5 ? 'A queda do ' + decliners[0].name + ' é significativa e merece atenção na estratégia de programação.' : 'As quedas são moderadas e podem reflectir variações sazonais normais.'}</div>`;
+            }
+
+            el.innerHTML = html;
+        }
+
+        function generatePenetracaoConclusions() {
+            const el = document.getElementById('penetracaoConclusions');
+            if (!el) return;
+            let html = '';
+
+            // 1. ZAP NOVELAS penetration trend
+            const novelasPen = PENETRACAO.map(r => r.zapNovelas).filter(v => v !== null);
+            const nMax = Math.max(...novelasPen), nMin = Math.min(...novelasPen);
+            const firstPen = PENETRACAO[0];
+            const lastPen = PENETRACAO[PENETRACAO.length - 1];
+            html += `<div class="insight-box"><strong>ZAP NOVELAS — Penetração:</strong> A penetração máxima variou entre ${nMin}% e ${nMax}%. ${firstPen.zapNovelas > lastPen.zapNovelas ? `Registou-se uma queda de ${(firstPen.zapNovelas - lastPen.zapNovelas).toFixed(1)} p.p. face a ${firstPen.sem} (${firstPen.zapNovelas}% → ${lastPen.zapNovelas}%). ` : ''}${lastPen.zapNovelas >= 30 ? 'Ainda assim, a recuperação para ' + lastPen.zapNovelas + '% na ' + lastPen.sem + ' é encorajadora.' : 'Os valores actuais indicam uma base de audiência fiel mas que precisa de estímulo.'}</div>`;
+
+            // 2. ZAP VIVA penetration
+            const vivaPen = PENETRACAO.filter(r => r.zapViva !== null);
+            if (vivaPen.length > 0) {
+                const vMax = Math.max(...vivaPen.map(r => r.zapViva));
+                const vMin = Math.min(...vivaPen.map(r => r.zapViva));
+                html += `<div class="insight-box"><strong>ZAP VIVA — Penetração:</strong> Penetração máxima entre ${vMin}% e ${vMax}%. ${vMax >= 10 ? 'O pico de ' + vMax + '% demonstra capacidade de atracção pontual, tipicamente associada a conteúdos especiais.' : 'Os valores reflectem uma audiência mais fragmentada.'} O programa destaque da última semana foi "${lastPen.programa || 'N/D'}".</div>`;
+            }
+
+            // 3. Estratos analysis
+            const estratos = ESTRATOS.map(r => r.estrato);
+            const estratoCounts = {};
+            estratos.forEach(e => { estratoCounts[e] = (estratoCounts[e] || 0) + 1; });
+            const topEstrato = Object.entries(estratoCounts).sort((a,b) => b[1] - a[1]);
+            const lastEstrato = ESTRATOS[ESTRATOS.length - 1];
+            html += `<div class="insight-box"><strong>Perfil socioeconómico:</strong> O estrato mais frequente é "${topEstrato[0][0]}" (${topEstrato[0][1]} de ${estratos.length} semanas). ${lastEstrato.estrato.includes('A/B') ? 'A presença do estrato A/B na última semana (' + lastEstrato.sem + ') é um sinal positivo de diversificação da audiência para segmentos de maior poder de compra.' : 'A predominância dos estratos D/E indica uma audiência de base popular.'}</div>`;
+
+            // 4. Estratos with share
+            const estratosWithShare = ESTRATOS.filter(r => r.share !== null);
+            if (estratosWithShare.length >= 2) {
+                const maxShare = Math.max(...estratosWithShare.map(r => r.share));
+                const minShare = Math.min(...estratosWithShare.map(r => r.share));
+                html += `<div class="insight-box"><strong>Share por estrato:</strong> Nos períodos com dados disponíveis, o share do estrato preponderante variou entre ${minShare}% e ${maxShare}%. ${maxShare >= 10 ? 'Os picos de ' + maxShare + '% indicam forte concentração de audiência em segmentos específicos — oportunidade para publicidade segmentada.' : 'Os valores são moderados e distribuídos.'}</div>`;
+            }
+
+            el.innerHTML = html;
+        }
+
         // ===== TV SUB-TAB SWITCHING =====
         function switchTVSubtab(index) {
             const tabs = document.querySelectorAll('.tv-subtab-content');
@@ -3034,6 +3210,9 @@
                     }
                 }
             });
+
+            // Generate conclusions
+            generateShareRankingConclusions();
 
             // Monthly ranking table
             const tbody = document.getElementById('monthlyRankingTable');
@@ -3154,6 +3333,9 @@
                     `<tr><td><strong>${r.sem}</strong></td><td>${r.premium}%</td><td>${r.max}%</td><td>${r.mais}%</td><td>${r.mini}%</td></tr>`
                 ).join('');
             }
+
+            // Generate conclusions
+            generatePacotesConclusions();
         }
 
         // ===== PROGRAMAS TV CHARTS =====
@@ -3210,6 +3392,9 @@
                     return `<tr><td><strong>${r.sem}</strong></td>${keys.map(k => `<td>${r[k] !== null ? r[k]+'%' : '—'}</td>`).join('')}</tr>`;
                 }).join('');
             }
+
+            // Generate conclusions
+            generateProgramasTVConclusions();
         }
 
         // ===== PENETRAÇÃO & ESTRATOS CHARTS =====
@@ -3252,6 +3437,9 @@
                     `<tr><td><strong>${r.sem}</strong></td><td>${r.zapNovelas}%</td><td>${r.zapViva !== null ? r.zapViva+'%' : '—'}</td><td>${r.programa || '—'}</td></tr>`
                 ).join('');
             }
+
+            // Generate conclusions
+            generatePenetracaoConclusions();
         }
 
         // ===== INIT =====
