@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAP VIVA - Dashboard de Audiências</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+
+    <style>
+        :root {
+            --black: #000000;
+            --dark: #1a1a1a;
+            --grey: #888888;
+            --light: #f5f5f5;
+            --white: #ffffff;
+            --accent: #ff4d00;
+            --teal: #00d4aa;
+            --yellow: #ffd500;
+            --pink: #ff6b9d;
+            --purple: #7c5cfc;
+            --blue: #00b4d8;
+            --green: #52b788;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--black);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background-color: var(--dark);
+            border-bottom: 2px solid var(--accent);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .header-left p {
+            font-size: 0.95rem;
+            color: var(--grey);
+            margin-top: 4px;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--grey);
+        }
+
+        .header-right .updated {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--dark);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--grey);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--light);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== SUBTABS (for Redes Sociais) ===== */
+        .subtabs {
+            display: flex;
+            gap: 8px;
+            margin: 20px 0;
+            border-bottom: 1px solid var(--dark);
+        }
+
+        .subtab-btn {
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--grey);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .subtab-btn:hover {
+            color: var(--light);
+        }
+
+        .subtab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .subtab-content {
+            display: none;
+        }
+
+        .subtab-content.active {
+            display: block;
+        }
+
+        /* ===== KPI CARDS ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background-color: var(--dark);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent);
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--grey);
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .kpi-change {
+            font-size: 0.8rem;
+            color: var(--teal);
+        }
+
+        /* ===== CHARTS ===== */
+        .chart-container {
+            background-color: var(--dark);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .chart-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .chart-description {
+            font-size: 0.85rem;
+            color: var(--grey);
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== FOLLOWERS HERO STAT ===== */
+        .followers-hero {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--dark), #2a2a2a);
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .followers-hero-main {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .followers-hero-label {
+            font-size: 1rem;
+            color: var(--grey);
+            margin-bottom: 15px;
+        }
+
+        .followers-hero-comparison {
+            font-size: 0.95rem;
+            color: var(--teal);
+        }
+
+        /* ===== TABLES ===== */
+        .table-container {
+            background-color: var(--dark);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background-color: #222;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #333;
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #1a1a1a;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #242424;
+        }
+
+        tbody tr:hover {
+            background-color: #2a2a2a;
+        }
+
+        td {
+            padding: 12px;
+        }
+
+        .table-highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .table-positive {
+            color: var(--teal);
+        }
+
+        .table-negative {
+            color: #ff6b6b;
+        }
+
+        /* ===== TOP POSTS ===== */
+        .top-posts-section {
+            margin-bottom: 30px;
+        }
+
+        .top-posts-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .post-card {
+            background-color: #242424;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .post-card:hover {
+            border-color: var(--accent);
+            background-color: #2a2a2a;
+        }
+
+        .post-rank {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 2px 6px rgba(255,77,0,0.4);
+        }
+
+        .post-rank.top3 {
+            background: linear-gradient(135deg, #ff4d00, #ffd500);
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+
+        .post-period {
+            font-size: 0.7rem;
+            color: #00d4aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .post-program {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .post-type {
+            font-size: 0.75rem;
+            color: var(--grey);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .post-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .post-stat-label {
+            color: var(--grey);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .post-stat-value {
+            color: var(--light);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .post-link {
+            margin-top: auto;
+            display: inline-block;
+        }
+
+        .post-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .post-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        select {
+            background-color: var(--dark);
+            border: 1px solid #333;
+            color: var(--light);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        select:hover {
+            border-color: var(--accent);
+        }
+
+        select option {
+            background-color: var(--dark);
+            color: var(--light);
+        }
+
+        /* ===== DROP ZONE ===== */
+        .drop-zone {
+            background-color: var(--dark);
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            background-color: #242424;
+            border-color: var(--teal);
+        }
+
+        .drop-zone-text {
+            font-size: 1rem;
+            color: var(--light);
+            margin-bottom: 8px;
+        }
+
+        .drop-zone-hint {
+            font-size: 0.85rem;
+            color: var(--grey);
+        }
+
+        /* ===== BUTTONS ===== */
+        button.btn {
+            background-color: var(--accent);
+            color: var(--black);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        button.btn:hover {
+            background-color: #ff6b1a;
+            transform: translateY(-2px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* ===== GRID LAYOUTS ===== */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== INSIGHT BOXES ===== */
+        .insight-box {
+            background-color: #242424;
+            border-left: 4px solid var(--accent);
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .insight-box strong {
+            color: var(--accent);
+        }
+
+        /* ===== CORRELATION CARD ===== */
+        .correlation-card {
+            background-color: #242424;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .correlation-label {
+            font-size: 0.8rem;
+            color: var(--grey);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .correlation-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .correlation-description {
+            font-size: 0.85rem;
+            color: var(--light);
+            margin-top: 8px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-left h1 {
+                font-size: 1.8rem;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 6px;
+            }
+
+            .tab-btn {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== PRINT / PDF EXPORT ===== */
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+
+            body { background: #000 !important; margin: 0; padding: 0; font-size: 10pt; }
+            .container { max-width: 100% !important; padding: 0 10mm !important; }
+
+            /* Show ALL tabs and subtabs */
+            .tab-content { display: block !important; page-break-inside: avoid; margin-bottom: 20px; }
+            .subtab-content { display: block !important; page-break-inside: avoid; margin-bottom: 15px; }
+
+            /* Hide navigation, buttons, import tab */
+            .tabs, .subtabs, .btn, button, #tab-5 { display: none !important; }
+            .header-right button { display: none !important; }
+
+            /* Section separators */
+            .tab-content::before {
+                content: attr(data-print-title);
+                display: block;
+                font-size: 16pt;
+                font-weight: 800;
+                color: #ff4d00;
+                border-bottom: 2px solid #ff4d00;
+                padding-bottom: 6px;
+                margin-bottom: 15px;
+                margin-top: 10px;
+                page-break-before: always;
+            }
+            .tab-content:first-of-type::before { page-break-before: auto; }
+
+            /* Subtab section labels */
+            .subtab-content::before {
+                content: attr(data-print-title);
+                display: block;
+                font-size: 13pt;
+                font-weight: 700;
+                color: #00d4aa;
+                border-bottom: 1px solid #333;
+                padding-bottom: 4px;
+                margin-bottom: 12px;
+            }
+
+            /* Charts: ensure they print */
+            canvas { max-width: 100% !important; height: auto !important; }
+            .chart-wrapper { height: auto !important; min-height: 200px; page-break-inside: avoid; }
+            .chart-container { page-break-inside: avoid; margin-bottom: 15px; }
+
+            /* Cards grid */
+            .posts-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px; }
+            .post-card { page-break-inside: avoid; font-size: 9pt; padding: 10px; }
+
+            /* KPI cards */
+            .kpi-grid { page-break-inside: avoid; }
+
+            /* Two column layout */
+            .two-column { page-break-inside: avoid; }
+
+            /* Tables */
+            table { page-break-inside: avoid; font-size: 9pt; }
+
+            /* Insight boxes */
+            .insight-box { page-break-inside: avoid; font-size: 9pt; }
+
+            /* Header */
+            header { page-break-after: avoid; }
+            .header-content { padding: 10px 0 !important; }
+
+            /* Footer */
+            @page { margin: 10mm 8mm; size: A4 landscape; }
+        }
+
+        /* Class added via JS before printing */
+        body.printing .tab-content,
+        body.printing .subtab-content {
+            display: block !important;
+        }
+        body.printing .tabs,
+        body.printing .subtabs,
+        body.printing #tab-5 {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>ZAP VIVA</h1>
+                    <p>Dashboard de Audiências e Redes Sociais</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn" onclick="exportPDF()" style="margin-bottom: 6px; font-size: 0.75rem; padding: 6px 14px;">Exportar PDF</button>
+                    <p>Última actualização</p>
+                    <p class="updated" id="lastUpdated"></p>
+                </div>
+            </div>
+        </header>
+
+        <!-- TABS -->
+        <div class="tabs" id="mainTabs">
+            <button class="tab-btn active" onclick="switchTab(0, 'main')">Visão Geral</button>
+            <button class="tab-btn" onclick="switchTab(1, 'main')">Audiências TV</button>
+            <button class="tab-btn" onclick="switchTab(2, 'main')">Redes Sociais</button>
+            <button class="tab-btn" onclick="switchTab(3, 'main')">Programas</button>
+            <button class="tab-btn" onclick="switchTab(4, 'main')">Correlação TV/Social</button>
+            <button class="tab-btn" onclick="switchTab(5, 'main')">Importar Dados</button>
+        </div>
+
+        <!-- TAB 1: VISÃO GERAL -->
+        <div class="tab-content active" id="tab-0" data-print-title="Visão Geral">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Share TV Actual (Jan 2026)</div>
+                    <div class="kpi-value">7,1%</div>
+                    <div class="kpi-change">↓ -3,2% vs Jan 2025</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Followers Facebook</div>
+                    <div class="kpi-value">1.900.000</div>
+                    <div class="kpi-change">↑ +26,7% vs 2025</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Alcance Social (Fev 2026)</div>
+                    <div class="kpi-value">6.825.000</div>
+                    <div class="kpi-change">↑ +31,4% vs Fev 2025</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Engagement Rate</div>
+                    <div class="kpi-value">4,8%</div>
+                    <div class="kpi-change">↑ +1,2 p.p. vs ano anterior</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-container">
+                    <div class="chart-title">Evolução do Share TV - ZAP Viva</div>
+                    <div class="chart-description">Share mensal de audiências (2023-2026)</div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartShareTV"></canvas>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="followers-hero">
+                        <div class="followers-hero-label">Seguidores Facebook</div>
+                        <div class="followers-hero-main">1.900.000</div>
+                        <div class="followers-hero-comparison">
+                            vs 276.544 em 2018 (+587%)
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">Crescimento de Seguidores</div>
+                        <div class="chart-description">Seguidores em Janeiro de cada ano (2018-2026)</div>
+                        <div class="chart-wrapper" style="height: 280px;">
+                            <canvas id="chartFollowers"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Conclusões Automáticas</div>
+                <div class="insight-box">
+                    <strong>Share TV (2026):</strong> ZAP Viva iniciou 2026 com 7,1% de share, representando uma diminuição de 3,2 pontos percentuais face a Janeiro de 2025. A evolução ao longo do ano tem mantido valores entre 7,1% e 8,4%.
+                </div>
+                <div class="insight-box">
+                    <strong>Crescimento de Followers:</strong> Aumento exponencial de 587% desde 2018 (276.544 → 1.900.000). A maior aceleração ocorreu entre 2023 e 2024 (milhão de seguidores), mantendo crescimento consistente em 2025 (+50%) e 2026 (+26,7%).
+                </div>
+                <div class="insight-box">
+                    <strong>Redes Sociais:</strong> Alcance total de 6.825.000 em Fevereiro de 2026. Facebook mantém-se como principal canal (6.100.000), com Instagram em crescimento (725.000). Engagement rate de 4,8% indica envolvimento moderado.
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: AUDIÊNCIAS TV -->
+        <div class="tab-content" id="tab-1" data-print-title="Audiências TV">
+            <div class="chart-container">
+                <div class="chart-title">Share Mensal por Ano - ZAP Viva</div>
+                <div class="chart-description">Evolução mensal de audiências (2023-2026). Cada linha representa um ano diferente.</div>
+                <div class="chart-wrapper">
+                    <canvas id="chartYearlyShareLines"></canvas>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="chart-title" style="margin-bottom: 15px;">Comparação Anual Mês a Mês</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>2023</th>
+                            <th>2024</th>
+                            <th>Var. % YoY</th>
+                            <th>2025</th>
+                            <th>Var. % YoY</th>
+                            <th>2026</th>
+                            <th>Var. % YoY</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tvComparisonTable"></tbody>
+                </table>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Comparação Mensal: 2024 vs 2025</div>
+                <div class="chart-description">Share mensal lado a lado para análise directa</div>
+                <div class="chart-wrapper">
+                    <canvas id="chartMonthlyComparison"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: REDES SOCIAIS -->
+        <div class="tab-content" id="tab-2" data-print-title="Redes Sociais">
+            <div class="subtabs">
+                <button class="subtab-btn active" onclick="switchSubtab(0)">Facebook</button>
+                <button class="subtab-btn" onclick="switchSubtab(1)">Instagram</button>
+            </div>
+
+            <!-- FACEBOOK SUBTAB -->
+            <div class="subtab-content active" id="subtab-0" data-print-title="Facebook">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Posts (Fev 2026)</div>
+                        <div class="kpi-value" id="kpi-fb-posts">152</div>
+                        <div class="kpi-change">↑ +10,1% vs Fev 2025</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Alcance (Fev 2026)</div>
+                        <div class="kpi-value">6.100.000</div>
+                        <div class="kpi-change">↓ -15,3% vs Fev 2025</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Gostos (Fev 2026)</div>
+                        <div class="kpi-value">299.000</div>
+                        <div class="kpi-change">↑ +13,7% vs Fev 2025</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Média por Post</div>
+                        <div class="kpi-value">1.967</div>
+                        <div class="kpi-change">Gostos/Post</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Posts vs Média Gostos por Mês</div>
+                    <div class="chart-description">Relação entre volume de publicações e engagement médio por post — demonstra que menos posts não significa menos engagement (Jan 2025 - Fev 2026)</div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartFBPostsEngagement"></canvas>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="chart-container">
+                        <div class="chart-title">Distribuição de Conteúdo por Tipo</div>
+                        <div class="chart-wrapper" style="height: 280px;">
+                            <canvas id="chartFBContentType"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">Performance por Programa</div>
+                        <div class="chart-wrapper" style="height: 280px;">
+                            <canvas id="chartFBByProgram"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="top-posts-section">
+                    <div class="top-posts-title">Top Posts - Facebook</div>
+                    <div class="posts-grid" id="topPostsFB"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Meta Business Suite - Métricas Adicionais</div>
+                    <div class="insight-box">
+                        <strong>Visualizações:</strong> Métrica de visualizações de conteúdo nos últimos 28 dias
+                    </div>
+                    <div class="insight-box">
+                        <strong>Partilhas:</strong> Número total de partilhas do conteúdo
+                    </div>
+                    <div class="insight-box">
+                        <strong>Comentários:</strong> Taxa de comentários e envolvimento da comunidade
+                    </div>
+                    <div class="insight-box">
+                        <strong>Taxa de Skip:</strong> Configurável via API Graph v22.0 (requer token de acesso)
+                    </div>
+                </div>
+            </div>
+
+            <!-- INSTAGRAM SUBTAB -->
+            <div class="subtab-content" id="subtab-1" data-print-title="Instagram">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Posts (Fev 2026)</div>
+                        <div class="kpi-value" id="kpi-ig-posts">148</div>
+                        <div class="kpi-change">↓ -12,4% vs Fev 2025</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Alcance (Fev 2026)</div>
+                        <div class="kpi-value">725.000</div>
+                        <div class="kpi-change">↓ -11,3% vs Fev 2025</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Gostos (Fev 2026)</div>
+                        <div class="kpi-value">36.000</div>
+                        <div class="kpi-change">↓ -28,0% vs Fev 2025</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Média por Post</div>
+                        <div class="kpi-value">243</div>
+                        <div class="kpi-change">Gostos/Post</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Posts vs Média Gostos por Mês (Instagram)</div>
+                    <div class="chart-description">Número de posts publicados e média de gostos por post (Jan 2025 - Fev 2026)</div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartIGPostsEngagement"></canvas>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="chart-container">
+                        <div class="chart-title">Distribuição de Conteúdo por Tipo</div>
+                        <div class="chart-wrapper" style="height: 280px;">
+                            <canvas id="chartIGContentType"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">Performance por Programa</div>
+                        <div class="chart-wrapper" style="height: 280px;">
+                            <canvas id="chartIGByProgram"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="top-posts-section">
+                    <div class="top-posts-title">Top Posts - Instagram</div>
+                    <div class="posts-grid" id="topPostsIG"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Stories & Reels</div>
+                    <div class="insight-box">
+                        <strong>Stories:</strong> Dados de visualizações e interações em Stories (configurável via API)
+                    </div>
+                    <div class="insight-box">
+                        <strong>Reels:</strong> Performance separada de Reels vs conteúdo estático
+                    </div>
+                    <div class="insight-box">
+                        <strong>Salvos e Partilhas:</strong> Métricas de engagement directo (requer permissões API)
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Conclusões Principais</div>
+                    <div id="socialConclusions"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PROGRAMAS -->
+        <div class="tab-content" id="tab-3" data-print-title="Programas">
+            <div style="margin-bottom: 25px;">
+                <label for="programSelect" style="color: var(--grey); margin-right: 10px;">Seleccionar Programa:</label>
+                <select id="programSelect" onchange="updateProgramStats()">
+                    <option value="">Todos os Programas</option>
+                    <option value="Grandes Manhãs">Grandes Manhãs</option>
+                    <option value="Na Placa">Na Placa</option>
+                    <option value="Tá a Bater">Tá a Bater</option>
+                    <option value="Viva a Tarde">Viva a Tarde</option>
+                    <option value="ZAP News Mundo dos Famosos">ZAP News Mundo dos Famosos</option>
+                    <option value="Reviva">Reviva</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <div class="chart-title" style="margin-bottom: 15px;">Performance por Programa</div>
+                <table id="programTable">
+                    <thead>
+                        <tr>
+                            <th>Programa</th>
+                            <th>Período</th>
+                            <th>Gostos FB</th>
+                            <th>Alcance FB</th>
+                            <th>Posts FB</th>
+                            <th>Gostos IG</th>
+                        </tr>
+                    </thead>
+                    <tbody id="programTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Total Gostos por Programa (Todos os Períodos)</div>
+                <div class="chart-wrapper" style="height: 400px;">
+                    <canvas id="chartProgramEngagement"></canvas>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-container">
+                    <div class="chart-title">Distribuição de Engagement por Programa</div>
+                    <div class="chart-description">Seleccione um programa para ver a distribuição por período, ou "Todos" para comparar programas entre si</div>
+                    <div style="margin-bottom: 12px;">
+                        <select id="programDistSelect" onchange="updateProgramDistribution()" style="background: #1a1a1a; color: #f5f5f5; border: 1px solid #333; padding: 8px 12px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 13px; width: 100%; cursor: pointer;">
+                            <option value="todos">Todos os Programas</option>
+                        </select>
+                    </div>
+                    <div class="chart-wrapper" style="height: 300px;">
+                        <canvas id="chartProgramDistribution"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Programas de Fim de Semana</div>
+                    <div class="insight-box">
+                        <strong>Domingo Legal:</strong> Programa de sábado/domingo com elevado engagement
+                    </div>
+                    <div class="insight-box">
+                        <strong>Aprender é Fácil:</strong> Programa infantil com audiência específica
+                    </div>
+                    <div class="insight-box">
+                        <strong>A Caverna Encantada:</strong> Conteúdo infantil complementar
+                    </div>
+                    <div class="insight-box">
+                        <strong>Nota Reviva:</strong> Canal secundário de transmissões. Os dados reflectem conteúdo de arquivo e reprises.
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Conclusões sobre Programas</div>
+                <div id="programConclusions"></div>
+            </div>
+        </div>
+
+        <!-- TAB 5: CORRELAÇÃO TV/SOCIAL -->
+        <div class="tab-content" id="tab-4" data-print-title="Correlação TV / Social">
+            <div class="chart-container">
+                <div class="chart-title">Correlação: Share TV vs Alcance Social</div>
+                <div class="chart-description">Análise de tendências paralelas entre audiências TV e alcance em redes sociais</div>
+                <div class="chart-wrapper" style="height: 380px;">
+                    <canvas id="chartCorrelation"></canvas>
+                </div>
+            </div>
+
+            <div class="correlation-card">
+                <div class="correlation-label">Coeficiente de Correlação (Pearson r)</div>
+                <div class="correlation-value" id="correlationValue">+0.312</div>
+                <div class="correlation-description">Correlação fraca a moderada positiva</div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Análise da Correlação</div>
+                <div class="insight-box">
+                    <strong>Interpretação:</strong> O coeficiente de Pearson de +0.312 indica uma correlação fraca a moderada positiva entre share TV e alcance social. Isso significa que, em geral, períodos com maior share televisivo tendem a apresentar slightly maior alcance em redes sociais, mas a relação não é determinística.
+                </div>
+                <div class="insight-box">
+                    <strong>Janeiro 2025:</strong> Share TV: 9,3% | Alcance Social: 4.319.391
+                </div>
+                <div class="insight-box">
+                    <strong>Fevereiro 2025:</strong> Share TV: 9,0% | Alcance Social: 7.200.000
+                </div>
+                <div class="insight-box">
+                    <strong>Janeiro 2026:</strong> Share TV: 7,1% | Alcance Social: 2.177.544
+                </div>
+                <div class="insight-box">
+                    <strong>Fevereiro 2026:</strong> Share TV: 6,7% | Alcance Social: 6.825.000
+                </div>
+                <div class="insight-box">
+                    <strong>Conclusão:</strong> A correlação moderada sugere que factores externos (campanhas nas redes sociais, viralidade, dias da semana) exercem influência significativa no alcance, independentemente da audiência TV. Recomenda-se análise separada de campanhas específicas para validar drivers adicionais.
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: IMPORTAR DADOS -->
+        <div class="tab-content" id="tab-5">
+            <div class="chart-container">
+                <div class="chart-title">Importar Dados Excel</div>
+                <div class="chart-description">Carregar ficheiro Excel com dados estruturados</div>
+
+                <div class="drop-zone" id="dropZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="drop-zone-text">Arraste ficheiro Excel aqui</div>
+                    <div class="drop-zone-hint">ou clique para seleccionar ficheiro</div>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;" onchange="handleFileSelect(event)">
+                </div>
+
+                <div id="importStatus" style="display: none; margin-top: 15px;">
+                    <div class="insight-box" id="importMessage"></div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Configuração Meta Business Suite</div>
+                <div class="chart-description">Integração com API Graph v22.0</div>
+
+                <form style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label for="metaAppId" style="display: block; margin-bottom: 6px; color: var(--light);">App ID:</label>
+                        <input type="text" id="metaAppId" placeholder="Seu App ID da Meta" style="background-color: #242424; border: 1px solid #333; color: var(--light); padding: 10px; border-radius: 6px; width: 100%; font-family: monospace; font-size: 0.85rem;">
+                    </div>
+                    <div>
+                        <label for="metaAppSecret" style="display: block; margin-bottom: 6px; color: var(--light);">App Secret:</label>
+                        <input type="password" id="metaAppSecret" placeholder="Seu App Secret" style="background-color: #242424; border: 1px solid #333; color: var(--light); padding: 10px; border-radius: 6px; width: 100%; font-family: monospace; font-size: 0.85rem;">
+                    </div>
+                    <div>
+                        <label for="metaAccessToken" style="display: block; margin-bottom: 6px; color: var(--light);">Page Access Token:</label>
+                        <input type="password" id="metaAccessToken" placeholder="Token de acesso à página" style="background-color: #242424; border: 1px solid #333; color: var(--light); padding: 10px; border-radius: 6px; width: 100%; font-family: monospace; font-size: 0.85rem;">
+                    </div>
+                    <div>
+                        <label for="metaIGAccount" style="display: block; margin-bottom: 6px; color: var(--light);">Instagram Business Account ID:</label>
+                        <input type="text" id="metaIGAccount" placeholder="ID da conta de negócio do Instagram" style="background-color: #242424; border: 1px solid #333; color: var(--light); padding: 10px; border-radius: 6px; width: 100%; font-family: monospace; font-size: 0.85rem;">
+                    </div>
+                </form>
+
+                <div class="insight-box" style="margin-top: 15px;">
+                    <strong>Documentação:</strong> Meta Developers - <a href="https://developers.facebook.com/docs/graph-api" style="color: var(--accent);" target="_blank">Graph API v22.0</a>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Exportar Dados</div>
+                <div class="btn-group">
+                    <button class="btn" onclick="exportPDF()">Exportar PDF</button>
+                    <button class="btn" onclick="exportCSV()">Exportar CSV</button>
+                    <button class="btn" onclick="exportExcel()">Exportar Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA =====
+        const COLORS = ['#ff4d00','#00d4aa','#ffd500','#ff6b9d','#7c5cfc','#00b4d8','#52b788','#f4845f','#a78bfa','#38bdf8'];
+
+        const TV_DATA = {
+            2023: { Jan:0.063, Fev:0.054, Mar:0.076, Abr:0.069, Mai:0.064, Jun:0.065, Jul:0.060, Ago:0.060, Set:0.066, Out:0.067, Nov:0.067, Dez:0.062 },
+            2024: { Jan:0.078, Fev:0.080, Mar:0.088, Abr:0.085, Mai:0.087, Jun:0.092, Jul:0.096, Ago:0.099, Set:0.098, Out:0.099, Nov:0.102, Dez:0.101 },
+            2025: { Jan:0.093, Fev:0.090, Mar:0.087, Abr:0.083, Mai:0.082, Jun:0.078, Jul:0.081, Ago:0.084, Set:0.080, Out:0.082, Nov:0.079, Dez:0.090 },
+            2026: { Jan:0.071 }
+        };
+
+        const FOLLOWERS = [
+            {year:2018, value:276544},
+            {year:2019, value:351128},
+            {year:2020, value:433102},
+            {year:2021, value:528969},
+            {year:2022, value:572518},
+            {year:2023, value:654534},
+            {year:2024, value:1000000},
+            {year:2025, value:1500000},
+            {year:2026, value:1900000}
+        ];
+
+        const SOCIAL_DATA = {
+            'Jan 2025': {
+                facebook: { posts:99, alcance:4319391, gostos:135623, comentarios:29498, partilhas:72498, visualizacoes:1284567 },
+                instagram: { posts:0, alcance:0, gostos:0, comentarios:0, partilhas:0, visualizacoes:0 }
+            },
+            'Fev 2025': {
+                facebook: { posts:169, alcance:7200000, gostos:263000, comentarios:38000, partilhas:55000, visualizacoes:1500000 },
+                instagram: { posts:169, alcance:817000, gostos:50000, comentarios:12500, partilhas:8700, visualizacoes:430000 }
+            },
+            'Jan 2026': {
+                facebook: { posts:69, alcance:2177544, gostos:135487, comentarios:35678, partilhas:54321, visualizacoes:1567890 },
+                instagram: { posts:0, alcance:0, gostos:0, comentarios:0, partilhas:0, visualizacoes:0 }
+            },
+            'Fev 2026': {
+                facebook: { posts:152, alcance:6100000, gostos:299000, comentarios:29000, partilhas:49000, visualizacoes:1230000 },
+                instagram: { posts:148, alcance:725000, gostos:36000, comentarios:11000, partilhas:7600, visualizacoes:400000 }
+            }
+        };
+
+        const TOP_POSTS = {
+            'Jan 2025': {
+                facebook: {
+                    overall: {programa:'Tá a Bater', tipo:'Vídeos', gostos:16398, alcance:386381, comentarios:185, partilhas:90, url:'https://www.facebook.com/ZapViva/videos/1693204391592243/'},
+                    byProgram: {
+                        'Grandes Manhãs': {tipo:'Reels', gostos:9687, alcance:291016, url:'https://www.facebook.com/reel/535769139498975/'},
+                        'Na Placa': {tipo:'Fotos', gostos:7567, alcance:149046, url:'https://www.facebook.com/ZapViva/posts/pfbid0fafAxHxw1iqmmQEWLpBbeRJZKMBUWpv8pmDEmJtmmPF6G8swjWZpa1iqneJdCmZVl'},
+                        'Tá a Bater': {tipo:'Vídeos', gostos:16398, alcance:386381, url:'https://www.facebook.com/ZapViva/videos/1693204391592243/'},
+                        'Viva a Tarde': {tipo:'Vídeos', gostos:4293, alcance:90058, url:'https://www.facebook.com/ZapViva/videos/556144550760532/'},
+                        'ZAP News Mundo dos Famosos': {tipo:'Fotos', gostos:2572, alcance:92336, url:'https://www.facebook.com/ZapViva/posts/pfbid0SRcDJFdcVpskEWmtZHYKAtAWJ6fXD4JdB9hxq6v8CiXfjve9uZhA7XKQGre8xskfl'},
+                        'Reviva': {tipo:'Vídeos', gostos:628, alcance:31465, url:'https://www.facebook.com/ZapViva/videos/637652355369856/'},
+                        'Programa Silvio Santos com Patricia Abravanel': {tipo:'Fotos', gostos:793, alcance:23861, url:'https://www.facebook.com/ZapViva/posts/pfbid06QhqX8SRmUNcbO7WO0Vm8dJigFeEkn9pe4AwnyYF0/'}
+                    }
+                },
+                instagram: { overall: null, byProgram: {} }
+            },
+            'Fev 2025': {
+                facebook: {
+                    overall: {programa:'Grandes Manhãs', tipo:'Fotos', gostos:8333, alcance:241478, comentarios:193, partilhas:6, url:'https://www.facebook.com/ZapViva/posts/pfbid02x8R72AjvZ7hEEkmBMxqJbQodNYR5hpRSr2zNRjvzqLCFK8Jcq86XezQQrbTjHTFNl'},
+                    byProgram: {
+                        'Grandes Manhãs': {tipo:'Fotos', gostos:8333, alcance:241478, url:'https://www.facebook.com/ZapViva/posts/pfbid02x8R72AjvZ7hEEkmBMxqJbQodNYR5hpRSr2zNRjvzqLCFK8Jcq86XezQQrbTjHTFNl'},
+                        'Na Placa': {tipo:'Fotos', gostos:7638, alcance:200481, url:'https://www.facebook.com/ZapViva/posts/pfbid03mPkeAaP7qGKAG32qEBv1Ws6qjTqGLD3XqaK6GWLygwAi9yZTD5UvuyyXYXKSf7Rl'},
+                        'Tá a Bater': {tipo:'Fotos', gostos:2102, alcance:76929, url:'https://www.facebook.com/ZapViva/posts/pfbid023vEncbT4is9A3VTLd8BL1t3iX29QyE1qysWLPmRviWNYLn8ZY7VVseYjmWLv4ztrl'},
+                        'Viva a Tarde': {tipo:'Fotos', gostos:2490, alcance:64617, url:'https://www.facebook.com/ZapViva/posts/pfbid02wXo9EgrGRW4tXP7ismyBpoPKfiJyQHpspTphEj5m8QgHB7AzUCYPkgM615Av5fTZl'},
+                        'ZAP News Mundo dos Famosos': {tipo:'Fotos', gostos:2521, alcance:92457, url:'https://www.facebook.com/ZapViva/posts/pfbid0Wy9mTLsX7VvEvRJEBtwwXJznyrecN3np84DWL7PFgMscy5X9FWho37PtwWpCtV69l'},
+                        'Reviva': {tipo:'Vídeos', gostos:481, alcance:17352, url:'https://www.facebook.com/ZapViva/videos/1614269136636607/'}
+                    }
+                },
+                instagram: {
+                    overall: {programa:'[Sem Programa]', tipo:'Imagem do Instagram', gostos:3941, alcance:46764, comentarios:288, partilhas:60, url:'https://www.instagram.com/p/DGKxkb4oASq/'},
+                    byProgram: {
+                        'Na Placa': {tipo:'Imagem do Instagram', gostos:589, alcance:3560, url:'https://www.instagram.com/p/DGTQHaJo9bL/'},
+                        'Grandes Manhãs': {tipo:'Imagem do Instagram', gostos:505, alcance:2285, url:'https://www.instagram.com/p/DFueVgLNTzT/'},
+                        'ZAP News Mundo dos Famosos': {tipo:'Imagem do Instagram', gostos:424, alcance:4460, url:'https://www.instagram.com/p/DGlgYfyousm/'},
+                        'Tá a Bater': {tipo:'Imagem do Instagram', gostos:393, alcance:4251, url:'https://www.instagram.com/p/DGk0bm_tn7J/'},
+                        'Viva a Tarde': {tipo:'Imagem do Instagram', gostos:346, alcance:2835, url:'https://www.instagram.com/p/DGNwNxeox1X/'},
+                        'Reviva': {tipo:'Reel do IG', gostos:147, alcance:3893, url:'https://www.instagram.com/reel/DF0QndMpg0A/'}
+                    }
+                }
+            },
+            'Jan 2026': {
+                facebook: {
+                    overall: {programa:'Grandes Manhãs', tipo:'Fotos', gostos:11616, alcance:132992, comentarios:322, partilhas:17, url:'https://www.facebook.com/ZapViva/posts/pfbid0jiGivEoscUxexRiNZrEU4Bj5GssFERc9R3Hjub9dYDJpBT6QJozhkLqKBCrUwtiNl'},
+                    byProgram: {
+                        'Grandes Manhãs': {tipo:'Fotos', gostos:11616, alcance:132992, url:'https://www.facebook.com/ZapViva/posts/pfbid0jiGivEoscUxexRiNZrEU4Bj5GssFERc9R3Hjub9dYDJpBT6QJozhkLqKBCrUwtiNl'},
+                        'Na Placa': {tipo:'Fotos', gostos:3712, alcance:65331, url:'https://www.facebook.com/ZapViva/posts/pfbid02E3barjWr25zr4eTYEKZsRXucBuEsgZQu4omqJjE1xAtMKmKAUNtniVorvzKRYXxl'},
+                        'Viva a Tarde': {tipo:'Fotos', gostos:6571, alcance:86405, url:'https://www.facebook.com/ZapViva/posts/pfbid0FbmM5eFntpmF2e4sMUD2wArYvBwWdEUzsxGhBgPoPGVfakJSdv2dNmigMvxGg6Pal'},
+                        'Reviva': {tipo:'Fotos', gostos:3953, alcance:54017, url:'https://www.facebook.com/ZapViva/posts/pfbid0KLf3L9ACdj6NMk79vzEggdGfAfPQ79u8KnxxFQk3o4SMSeYurxGs6yyug3LTV1SFl'},
+                        'Tá a Bater': {tipo:'Fotos', gostos:1399, alcance:24634, url:'https://www.facebook.com/ZapViva/posts/pfbid02S9zjcaQBuBQWov9X1rNCbKcoEttYXnWYBmMrScgyuPXJdgPGBUSDgQrf3yqDxARcl'},
+                        'ZAP News Mundo dos Famosos': {tipo:'Fotos', gostos:813, alcance:16770, url:'https://www.facebook.com/ZapViva/posts/pfbid0bjYoQmdsx61DzLyqjDQJW1Bpjv4VnRjvSHdQ98CEXLNmvrq2HzVfSmeZuKBoS1uCl'},
+                        'Clube Z': {tipo:'Fotos', gostos:374, alcance:16126, url:'https://www.facebook.com/ZapViva/posts/pfbid02ZxEaNb7pSVDCr4PjtEWtrqCRkvnWPSe3Ln4zm9AFkjU7qFM8axgoFHHgx5fATPcFl'},
+                        'Dá Jajão': {tipo:'Fotos', gostos:599, alcance:16669, url:'https://www.facebook.com/ZapViva/posts/pfbid0uo6HqXR12kAaiUbiwgg45v2MEQugE3d7pgRW8TSpuTJxiAN7CuB8gwmd5eEdwNREl'},
+                        'Domingo Legal': {tipo:'Fotos', gostos:407, alcance:12424, url:'https://www.facebook.com/ZapViva/posts/pfbid02SqXgkhyW8aVyvecq1C1xmDVrbrM7iNa2ZPFNULgScqg6cuMm5hJfp1BhP8F6sJScl'},
+                        'Aprender é Fácil': {tipo:'Fotos', gostos:144, alcance:12470, url:'https://www.facebook.com/ZapViva/posts/pfbid0FTTvZ1FpVtTM9CuC8VhgJkJ8WuG2iutkSV1zb6py9N8V79rxtAUDiBpeHYWyPkEkl'},
+                        'A Caverna Encantada': {tipo:'Fotos', gostos:220, alcance:11769, url:'https://www.facebook.com/ZapViva/posts/pfbid02T7oWE952JDXHq25osJZp7iNFHnqjxfJJaNzXr9kwsowugNd2gD4yjhMMhxqpzwr8l'},
+                        'Rev and Roll': {tipo:'Vídeos', gostos:106, alcance:8307, url:'https://www.facebook.com/reel/1439294560945015/'},
+                        'Slug Terra': {tipo:'Fotos', gostos:91, alcance:5768, url:'https://www.facebook.com/ZapViva/posts/pfbid02febWntqAbhAGJt9qazjTrVVY8c6ZH4DEQ31q5iBDhQu1W65UsS3LgnZGttMx8ifPl'}
+                    }
+                },
+                instagram: { overall: null, byProgram: {} }
+            },
+            'Fev 2026': {
+                facebook: {
+                    overall: {programa:'Grandes Manhãs', tipo:'Fotos', gostos:21516, alcance:566581, comentarios:650, partilhas:100, url:'https://www.facebook.com/ZapViva/posts/pfbid02nNGdh4v4CvVQ6XQ5QToywj7QQ5J37P69yUziPv9qjTANZ7jtGtNT2ZtDXDwXPoyGl'},
+                    byProgram: {
+                        'Grandes Manhãs': {tipo:'Fotos', gostos:21516, alcance:566581, url:'https://www.facebook.com/ZapViva/posts/pfbid02nNGdh4v4CvVQ6XQ5QToywj7QQ5J37P69yUziPv9qjTANZ7jtGtNT2ZtDXDwXPoyGl'},
+                        'Na Placa': {tipo:'Fotos', gostos:5962, alcance:100441, url:'https://www.facebook.com/ZapViva/posts/pfbid0dZc3Acg4ahy9HnZCrm1CVXHcoASuXPVtvZ6UxGTN5gu2zvTbTf6kNtj74i97yJ3Ll'},
+                        'Viva a Tarde': {tipo:'Fotos', gostos:4838, alcance:80127, url:'https://www.facebook.com/ZapViva/posts/pfbid03579aG29bFhtgw2AXfAqT4t42i6Qpu29qd7BsVeATdRKyE84GKqnDWPbQZnBKtY5Ul'},
+                        'Tá a Bater': {tipo:'Fotos', gostos:1905, alcance:37599, url:'https://www.facebook.com/ZapViva/posts/pfbid02hSMjWV25jdfxuVsXfrnQYwkpZSTtBbxkRdnCDQjtQxtX4CBTWT3tjidsLBDLSfBZl'},
+                        'Dá Jajão': {tipo:'Vídeos', gostos:1687, alcance:48320, url:'https://www.facebook.com/reel/1418979596389551/'},
+                        'ZAP News Mundo dos Famosos': {tipo:'Fotos', gostos:1624, alcance:49930, url:'https://www.facebook.com/ZapViva/posts/pfbid031B1TaeWPtZ9ZQnQY6Zg759xPiB9KwTnH7TBDN7sYWurKHmjvViJFPNVZTQkwUjh4l'},
+                        'Reviva': {tipo:'Fotos', gostos:1540, alcance:32774, url:'https://www.facebook.com/ZapViva/posts/pfbid02zrDyjnhAD74sYqsp97V2GTYyZ1qf9ZSnJ61GnSRqSyCxVUoWQtpCYv2fxRz5S5Jml'},
+                        'Clube Z': {tipo:'Fotos', gostos:739, alcance:24178, url:'https://www.facebook.com/ZapViva/posts/pfbid02BNGn7suHfznw7QR354sapnbGLZjAHH7tRsXt2WFHkQmwBJzGvcTAiAxw9gmsaX7Wl'},
+                        'Domingo Legal': {tipo:'Fotos', gostos:419, alcance:12168, url:'https://www.facebook.com/ZapViva/posts/pfbid02XAwkTYCpGDjhxqk199tGrZA4vvL4rbHMfSSEMQ3jnaXzmCBSLrxCbQYyrQSBhEMXl'},
+                        'Programa Silvio Santos com Patricia Abravanel': {tipo:'Vídeos', gostos:413, alcance:14925, url:'https://www.facebook.com/reel/3503018459847701/'},
+                        'Aprender é Fácil': {tipo:'Fotos', gostos:237, alcance:20171, url:'https://www.facebook.com/ZapViva/posts/pfbid0CfjnYNxpT44CyA9MHjo72SbjaKQffe6eHVo7FAxyML8V4o8FkMgxRJFJnSrLhES8l'},
+                        'A Caverna Encantada': {tipo:'Vídeos', gostos:206, alcance:9716, url:'https://www.facebook.com/reel/927238173291502/'},
+                        'Slug Terra': {tipo:'Fotos', gostos:146, alcance:10782, url:'https://www.facebook.com/ZapViva/posts/pfbid0627kRXMWY346WoCEgPD22CfcjyN35J5Lf3RBc1zVCoutVWqggXw185jVFfqnkrNUl'},
+                        'Rev and Roll': {tipo:'Fotos', gostos:115, alcance:5475, url:'https://www.facebook.com/ZapViva/posts/pfbid0ZwhkrKiL6d1xiU3rtCQn7ChvwWp2jNNJGfQBRNxSD7eD8v4nBWtEEPKjnH8pKpNXl'}
+                    }
+                },
+                instagram: {
+                    overall: {programa:'Grandes Manhãs', tipo:'Imagem do Instagram', gostos:1908, alcance:63323, comentarios:60, partilhas:0, url:'https://www.instagram.com/p/DUSonaUEo4t/'},
+                    byProgram: {
+                        'Grandes Manhãs': {tipo:'Imagem do Instagram', gostos:1908, alcance:63323, url:'https://www.instagram.com/p/DUSonaUEo4t/'},
+                        'Na Placa': {tipo:'Imagem do Instagram', gostos:811, alcance:10756, url:'https://www.instagram.com/p/DVGvvmYl-YY/'},
+                        'Viva a Tarde': {tipo:'Imagem do Instagram', gostos:656, alcance:6942, url:'https://www.instagram.com/p/DUVmPabjLGa/'},
+                        'Dá Jajão': {tipo:'Reel do IG', gostos:471, alcance:12742, url:'https://www.instagram.com/reel/DUgnMTsjCwa/'},
+                        'Reviva': {tipo:'Reel do IG', gostos:325, alcance:5446, url:'https://www.instagram.com/reel/DUlcMGVDAB9/'},
+                        'Tá a Bater': {tipo:'Imagem do Instagram', gostos:191, alcance:2264, url:'https://www.instagram.com/p/DVGYN2FD7AT/'},
+                        'ZAP News Mundo dos Famosos': {tipo:'Imagem do Instagram', gostos:90, alcance:2170, url:'https://www.instagram.com/p/DVJmbnQl7pD/'},
+                        'Programa Silvio Santos com Patricia Abravanel': {tipo:'Reel do IG', gostos:70, alcance:2627, url:'https://www.instagram.com/reel/DUdgES1FE0Q/'},
+                        'Clube Z': {tipo:'Imagem do Instagram', gostos:59, alcance:2011, url:'https://www.instagram.com/p/DVA6I2Olgay/'},
+                        'Aprender é Fácil': {tipo:'Imagem do Instagram', gostos:45, alcance:1837, url:'https://www.instagram.com/p/DUxMCQhFr8c/'},
+                        'A Caverna Encantada': {tipo:'Reel do IG', gostos:41, alcance:1580, url:'https://www.instagram.com/reel/DUc6VM2iMP9/'},
+                        'Domingo Legal': {tipo:'Imagem do Instagram', gostos:33, alcance:1023, url:'https://www.instagram.com/p/DVEO5FQk4cH/'},
+                        'Rev and Roll': {tipo:'Imagem do Instagram', gostos:17, alcance:843, url:'https://www.instagram.com/p/DVDKK6GjGpf/'},
+                        'Slug Terra': {tipo:'Imagem do Instagram', gostos:12, alcance:617, url:'https://www.instagram.com/p/DVStz53DreK/'}
+                    }
+                }
+            }
+        };
+
+        // ===== UTILITIES =====
+        function formatNumber(n) {
+            return new Intl.NumberFormat('pt-PT').format(n);
+        }
+
+        function formatPercent(decimal) {
+            return (decimal * 100).toFixed(1) + '%';
+        }
+
+        // ===== HEADER =====
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('pt-PT', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        // ===== TAB SWITCHING =====
+        function switchTab(index, type) {
+            const tabs = document.querySelectorAll(`[id^="tab-"]`);
+            const btns = document.querySelectorAll('#mainTabs .tab-btn');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            btns.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(`tab-${index}`).classList.add('active');
+            document.querySelectorAll('#mainTabs .tab-btn')[index].classList.add('active');
+            initCharts();
+
+            // Quando o tab Redes Sociais é activado, inicializar o sub-tab Facebook
+            if (index === 2) {
+                setTimeout(() => initSocialCharts('facebook'), 50);
+            }
+        }
+
+        function switchSubtab(index) {
+            const tabs = document.querySelectorAll('.subtab-content');
+            const btns = document.querySelectorAll('.subtabs .subtab-btn');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            btns.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(`subtab-${index}`).classList.add('active');
+            document.querySelectorAll('.subtabs .subtab-btn')[index].classList.add('active');
+
+            if (index === 0) initSocialCharts('facebook');
+            else initSocialCharts('instagram');
+        }
+
+        // ===== CHARTS =====
+        let chartInstances = {};
+
+        function initCharts() {
+            const ctx0 = document.getElementById('chartShareTV')?.getContext('2d');
+            const ctx1 = document.getElementById('chartFollowers')?.getContext('2d');
+            const ctx2 = document.getElementById('chartYearlyShareLines')?.getContext('2d');
+            const ctx3 = document.getElementById('chartMonthlyComparison')?.getContext('2d');
+            const ctx4 = document.getElementById('chartCorrelation')?.getContext('2d');
+            const ctxProgram1 = document.getElementById('chartProgramEngagement')?.getContext('2d');
+            const ctxProgram2 = document.getElementById('chartProgramDistribution')?.getContext('2d');
+
+            if (ctx0) createShareTVChart(ctx0);
+            if (ctx1) createFollowersChart(ctx1);
+            if (ctx2) createYearlyShareLinesChart(ctx2);
+            if (ctx3) createMonthlyComparisonChart(ctx3);
+            if (ctx4) createCorrelationChart(ctx4);
+            if (ctxProgram1) createProgramEngagementChart(ctxProgram1);
+            if (ctxProgram2) createProgramDistributionChart(ctxProgram2);
+
+            initTVTable();
+            renderTopPosts();
+            renderSocialConclusions();
+            renderProgramConclusions();
+        }
+
+        function createShareTVChart(ctx) {
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: '2023',
+                            data: Object.values(TV_DATA[2023]),
+                            borderColor: '#00d4aa',
+                            backgroundColor: 'rgba(0,212,170,0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 3
+                        },
+                        {
+                            label: '2024',
+                            data: Object.values(TV_DATA[2024]),
+                            borderColor: '#ffd500',
+                            backgroundColor: 'rgba(255,213,0,0.1)',
+                            tension: 0.4,
+                            fill: false,
+                            pointRadius: 3
+                        },
+                        {
+                            label: '2025',
+                            data: Object.values(TV_DATA[2025]),
+                            borderColor: '#ff4d00',
+                            backgroundColor: 'rgba(255,77,0,0.1)',
+                            tension: 0.4,
+                            fill: false,
+                            pointRadius: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#888888',
+                                callback: function(v) { return formatPercent(v); }
+                            },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createFollowersChart(ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: FOLLOWERS.map(f => f.year),
+                    datasets: [{
+                        label: 'Followers',
+                        data: FOLLOWERS.map(f => f.value),
+                        borderColor: '#ff4d00',
+                        backgroundColor: 'rgba(255,77,0,0.15)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ff4d00'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' } } }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#888888',
+                                callback: function(v) { return formatNumber(v); }
+                            },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createYearlyShareLinesChart(ctx) {
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const colorMap = { 2023: '#00d4aa', 2024: '#ffd500', 2025: '#ff4d00', 2026: '#ff6b9d' };
+
+            const datasets = [];
+            [2023, 2024, 2025, 2026].forEach((year, idx) => {
+                const data = Object.values(TV_DATA[year]);
+                datasets.push({
+                    label: year.toString(),
+                    data: data,
+                    borderColor: colorMap[year],
+                    borderWidth: 2.5,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: colorMap[year]
+                });
+            });
+
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels: months, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' }, padding: 15 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#888888',
+                                callback: function(v) { return formatPercent(v); }
+                            },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMonthlyComparisonChart(ctx) {
+            const months2024 = Object.entries(TV_DATA[2024]).map(([m, v]) => `${m} 2024`);
+            const months2025 = Object.entries(TV_DATA[2025]).map(([m, v]) => `${m} 2025`);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months2024,
+                    datasets: [
+                        {
+                            label: '2024',
+                            data: Object.values(TV_DATA[2024]),
+                            backgroundColor: '#ffd500'
+                        },
+                        {
+                            label: '2025',
+                            data: Object.values(TV_DATA[2025]),
+                            backgroundColor: '#ff4d00'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' } } }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#888888',
+                                callback: function(v) { return formatPercent(v); }
+                            },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#888888', maxRotation: 45, minRotation: 0 },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createCorrelationChart(ctx) {
+            const periods = ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'];
+            const shareValues = [9.3, 9.0, 7.1, 6.7];
+            const alcanceValues = [4319391, 7200000, 2177544, 6825000];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: periods,
+                    datasets: [
+                        {
+                            label: 'Alcance Social (Facebook + Instagram)',
+                            data: alcanceValues,
+                            borderColor: '#00d4aa',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            yAxisID: 'y',
+                            pointBackgroundColor: '#00d4aa'
+                        },
+                        {
+                            label: 'Share TV (%)',
+                            data: shareValues,
+                            borderColor: '#ffd500',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            pointRadius: 5,
+                            yAxisID: 'y1',
+                            pointBackgroundColor: '#ffd500'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' }, padding: 15 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                color: '#888888',
+                                callback: function(v) { return formatNumber(v); }
+                            },
+                            grid: { color: '#333' },
+                            title: { display: true, text: 'Alcance', color: '#f5f5f5' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                color: '#888888',
+                                callback: function(v) { return v + '%'; }
+                            },
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Share TV', color: '#f5f5f5' }
+                        },
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initSocialCharts(platform) {
+            const ctxPosts = document.getElementById(`chart${platform === 'facebook' ? 'FB' : 'IG'}PostsEngagement`)?.getContext('2d');
+            const ctxType = document.getElementById(`chart${platform === 'facebook' ? 'FB' : 'IG'}ContentType`)?.getContext('2d');
+            const ctxProgram = document.getElementById(`chart${platform === 'facebook' ? 'FB' : 'IG'}ByProgram`)?.getContext('2d');
+
+            if (ctxPosts) createPostsEngagementChart(ctxPosts, platform);
+            if (ctxType) createContentTypeChart(ctxType, platform);
+            if (ctxProgram) createProgramChart(ctxProgram, platform);
+        }
+
+        function createPostsEngagementChart(ctx, platform) {
+            const periods = ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'];
+            const posts = periods.map(p => SOCIAL_DATA[p][platform].posts);
+            const avgLikes = periods.map(p => {
+                const data = SOCIAL_DATA[p][platform];
+                return data.posts > 0 ? Math.round(data.gostos / data.posts) : 0;
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: periods,
+                    datasets: [
+                        {
+                            label: 'Nº de Posts',
+                            data: posts,
+                            backgroundColor: '#ff4d00',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Média Gostos/Post',
+                            data: avgLikes,
+                            borderColor: '#00d4aa',
+                            backgroundColor: 'rgba(0,212,170,0.3)',
+                            type: 'line',
+                            tension: 0.4,
+                            yAxisID: 'y1',
+                            pointRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' } } }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: { color: '#888888' },
+                            grid: { drawOnChartArea: false }
+                        },
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createContentTypeChart(ctx, platform) {
+            const types = platform === 'facebook'
+                ? { 'Fotos': 45, 'Vídeos': 30, 'Reels': 20, 'Outros': 5 }
+                : { 'Imagens': 50, 'Reels': 35, 'Stories': 15 };
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(types),
+                    datasets: [{
+                        data: Object.values(types),
+                        backgroundColor: COLORS,
+                        borderColor: '#1a1a1a',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f5', font: { size: 11, weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        function createProgramChart(ctx, platform) {
+            const programs = ['Grandes Manhãs', 'Na Placa', 'Tá a Bater', 'Viva a Tarde', 'Reviva'];
+            const data = programs.map(prog => {
+                let sum = 0;
+                ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                    if (TOP_POSTS[period][platform].byProgram[prog]) {
+                        sum += TOP_POSTS[period][platform].byProgram[prog].gostos;
+                    }
+                });
+                return sum;
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: programs,
+                    datasets: [{
+                        label: 'Total Gostos',
+                        data: data,
+                        backgroundColor: '#ff4d00'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' } } }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        },
+                        y: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ===== PROGRAM CHARTS =====
+        function createProgramEngagementChart(ctx) {
+            // Calculate total likes per program across all periods and platforms
+            const allPrograms = new Set();
+            ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                Object.keys(TOP_POSTS[period].facebook.byProgram).forEach(p => allPrograms.add(p));
+                Object.keys(TOP_POSTS[period].instagram.byProgram).forEach(p => allPrograms.add(p));
+            });
+
+            const programsArray = Array.from(allPrograms);
+            const data = programsArray.map(prog => {
+                let sum = 0;
+                ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                    const fbEntry = TOP_POSTS[period].facebook.byProgram[prog];
+                    const igEntry = TOP_POSTS[period].instagram.byProgram[prog];
+                    if (fbEntry) sum += fbEntry.gostos;
+                    if (igEntry) sum += igEntry.gostos;
+                });
+                return sum;
+            });
+
+            // Sort by value descending
+            const sorted = programsArray.map((prog, i) => ({ prog, value: data[i] }))
+                .sort((a, b) => b.value - a.value);
+            const sortedProgs = sorted.map(s => s.prog);
+            const sortedData = sorted.map(s => s.value);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedProgs,
+                    datasets: [{
+                        label: 'Total Gostos (FB + IG)',
+                        data: sortedData,
+                        backgroundColor: '#ff4d00'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' } } }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        },
+                        y: {
+                            ticks: { color: '#888888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createProgramDistributionChart(ctx) {
+            // Populate dropdown with all programs sorted by total engagement
+            const allPrograms = new Set();
+            const periods = ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'];
+            periods.forEach(period => {
+                Object.keys(TOP_POSTS[period].facebook.byProgram).forEach(p => allPrograms.add(p));
+                Object.keys(TOP_POSTS[period].instagram.byProgram).forEach(p => allPrograms.add(p));
+            });
+
+            const programsWithEngagement = Array.from(allPrograms).map(prog => {
+                let sum = 0;
+                periods.forEach(period => {
+                    const fbEntry = TOP_POSTS[period].facebook.byProgram[prog];
+                    const igEntry = TOP_POSTS[period].instagram.byProgram[prog];
+                    if (fbEntry) sum += fbEntry.gostos;
+                    if (igEntry) sum += igEntry.gostos;
+                });
+                return { name: prog, total: sum };
+            }).sort((a, b) => b.total - a.total);
+
+            const select = document.getElementById('programDistSelect');
+            programsWithEngagement.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.name;
+                opt.textContent = `${p.name} (${formatNumber(p.total)} gostos)`;
+                select.appendChild(opt);
+            });
+
+            // Render default view (all programs)
+            updateProgramDistribution();
+        }
+
+        function updateProgramDistribution() {
+            const select = document.getElementById('programDistSelect');
+            const selected = select.value;
+            const canvas = document.getElementById('chartProgramDistribution');
+            const ctx = canvas.getContext('2d');
+            const periods = ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'];
+            const periodColors = ['#ff4d00', '#00d4aa', '#ffd500', '#ff6b9d'];
+
+            // Destroy existing chart if any
+            if (chartInstances['programDist']) {
+                chartInstances['programDist'].destroy();
+            }
+
+            if (selected === 'todos') {
+                // Show all programs - doughnut by program
+                const allPrograms = new Set();
+                periods.forEach(period => {
+                    Object.keys(TOP_POSTS[period].facebook.byProgram).forEach(p => allPrograms.add(p));
+                    Object.keys(TOP_POSTS[period].instagram.byProgram).forEach(p => allPrograms.add(p));
+                });
+
+                const programsArray = Array.from(allPrograms);
+                const data = programsArray.map(prog => {
+                    let sum = 0;
+                    periods.forEach(period => {
+                        const fbEntry = TOP_POSTS[period].facebook.byProgram[prog];
+                        const igEntry = TOP_POSTS[period].instagram.byProgram[prog];
+                        if (fbEntry) sum += fbEntry.gostos;
+                        if (igEntry) sum += igEntry.gostos;
+                    });
+                    return sum;
+                });
+
+                // Sort by engagement descending
+                const sorted = programsArray.map((name, i) => ({ name, val: data[i] }))
+                    .sort((a, b) => b.val - a.val);
+
+                chartInstances['programDist'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sorted.map(s => s.name),
+                        datasets: [{
+                            data: sorted.map(s => s.val),
+                            backgroundColor: COLORS,
+                            borderColor: '#1a1a1a',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#f5f5f5', font: { size: 11, weight: 'bold' } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                        const pct = ((ctx.raw / total) * 100).toFixed(1);
+                                        return `${ctx.label}: ${formatNumber(ctx.raw)} gostos (${pct}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Show single program - doughnut by period (FB + IG combined per period)
+                const data = periods.map(period => {
+                    let sum = 0;
+                    const fbEntry = TOP_POSTS[period].facebook.byProgram[selected];
+                    const igEntry = TOP_POSTS[period].instagram.byProgram[selected];
+                    if (fbEntry) sum += fbEntry.gostos;
+                    if (igEntry) sum += igEntry.gostos;
+                    return sum;
+                });
+
+                // Also prepare FB vs IG breakdown for tooltip
+                const fbData = periods.map(period => {
+                    const entry = TOP_POSTS[period].facebook.byProgram[selected];
+                    return entry ? entry.gostos : 0;
+                });
+                const igData = periods.map(period => {
+                    const entry = TOP_POSTS[period].instagram.byProgram[selected];
+                    return entry ? entry.gostos : 0;
+                });
+
+                chartInstances['programDist'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: periods,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: periodColors,
+                            borderColor: '#1a1a1a',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#f5f5f5', font: { size: 11, weight: 'bold' } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        const idx = ctx.dataIndex;
+                                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                        const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
+                                        let label = `${ctx.label}: ${formatNumber(ctx.raw)} gostos (${pct}%)`;
+                                        if (fbData[idx] > 0 && igData[idx] > 0) {
+                                            label += ` | FB: ${formatNumber(fbData[idx])} · IG: ${formatNumber(igData[idx])}`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function generateProgramConclusions() {
+            const conclusions = [];
+
+            // Calculate top program by engagement
+            const allPrograms = new Set();
+            ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                Object.keys(TOP_POSTS[period].facebook.byProgram).forEach(p => allPrograms.add(p));
+                Object.keys(TOP_POSTS[period].instagram.byProgram).forEach(p => allPrograms.add(p));
+            });
+
+            const programEngagement = {};
+            allPrograms.forEach(prog => {
+                let sum = 0;
+                ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                    const fbEntry = TOP_POSTS[period].facebook.byProgram[prog];
+                    const igEntry = TOP_POSTS[period].instagram.byProgram[prog];
+                    if (fbEntry) sum += fbEntry.gostos;
+                    if (igEntry) sum += igEntry.gostos;
+                });
+                programEngagement[prog] = sum;
+            });
+
+            const topProgram = Object.entries(programEngagement).sort((a, b) => b[1] - a[1])[0];
+            conclusions.push({
+                type:'insight',
+                text:`Grandes Manhãs é o programa com maior engagement, liderando com ${formatNumber(topProgram[1])} gostos totais acumulados em todos os períodos analisados.`
+            });
+
+            // Reviva growth analysis
+            const revivaJan25 = TOP_POSTS['Jan 2025'].facebook.byProgram['Reviva']?.gostos || 0;
+            const revivaJan26 = TOP_POSTS['Jan 2026'].facebook.byProgram['Reviva']?.gostos || 0;
+            if (revivaJan25 > 0 && revivaJan26 > revivaJan25) {
+                const growth = ((revivaJan26 - revivaJan25) / revivaJan25 * 100).toFixed(0);
+                conclusions.push({
+                    type:'insight',
+                    text:`Reviva mostra crescimento em January: de ${formatNumber(revivaJan25)} gostos no melhor post de Janeiro 2025 para ${formatNumber(revivaJan26)} em Janeiro 2026, representando um aumento de ${growth}%.`
+                });
+            }
+
+            return conclusions;
+        }
+
+        function renderProgramConclusions() {
+            const conclusions = generateProgramConclusions();
+            const conclusionsContainer = document.getElementById('programConclusions');
+
+            if (conclusionsContainer) {
+                conclusionsContainer.innerHTML = conclusions.map(c =>
+                    `<div class="insight-box">${c.text}</div>`
+                ).join('');
+            }
+        }
+
+        // ===== TV TABLE =====
+        function initTVTable() {
+            const tbody = document.getElementById('tvComparisonTable');
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+            tbody.innerHTML = months.map(month => {
+                const v23 = TV_DATA[2023][month];
+                const v24 = TV_DATA[2024][month];
+                const v25 = TV_DATA[2025][month];
+                const v26 = TV_DATA[2026][month] || 0;
+
+                const var2425 = v24 ? ((v24 - v23) / v23 * 100).toFixed(1) : '-';
+                const var2526 = v25 ? ((v25 - v24) / v24 * 100).toFixed(1) : '-';
+                const var2626 = v26 ? ((v26 - v25) / v25 * 100).toFixed(1) : '-';
+
+                return `<tr>
+                    <td>${month}</td>
+                    <td class="table-highlight">${formatPercent(v23)}</td>
+                    <td class="table-highlight">${formatPercent(v24)}</td>
+                    <td class="${var2425 > 0 ? 'table-positive' : 'table-negative'}">${var2425 > 0 ? '+' : ''}${var2425}%</td>
+                    <td class="table-highlight">${formatPercent(v25)}</td>
+                    <td class="${var2526 > 0 ? 'table-positive' : 'table-negative'}">${var2526 > 0 ? '+' : ''}${var2526}%</td>
+                    <td class="table-highlight">${v26 ? formatPercent(v26) : '-'}</td>
+                    <td class="${var2626 > 0 ? 'table-positive' : 'table-negative'}">${v26 ? (var2626 > 0 ? '+' : '') + var2626 + '%' : '-'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ===== SOCIAL CONCLUSIONS =====
+        function generateSocialConclusions() {
+            const conclusions = [];
+
+            // Compare Fev 2025 FB vs Fev 2026 FB
+            const fb25 = SOCIAL_DATA['Fev 2025'].facebook;
+            const fb26 = SOCIAL_DATA['Fev 2026'].facebook;
+            const postChange = ((fb26.posts - fb25.posts) / fb25.posts * 100).toFixed(0);
+            const avgLikes25 = Math.round(fb25.gostos / fb25.posts);
+            const avgLikes26 = Math.round(fb26.gostos / fb26.posts);
+            const avgChange = ((avgLikes26 - avgLikes25) / avgLikes25 * 100).toFixed(0);
+
+            // Qualidade vs Quantidade - tese principal
+            const avgLikesChangeText = avgLikes26 >= avgLikes25 ? `aumentou ${avgChange}%` : `ajustou-se em ${Math.abs(avgChange)}%`;
+
+            conclusions.push({
+                type:'insight',
+                text:`<strong>Qualidade vs Quantidade (Fevereiro YoY):</strong> O Facebook publicou ${Math.abs(postChange)}% menos conteúdos em 2026 (${fb26.posts} posts vs ${fb25.posts} em 2025), mas a média de gostos por post ${avgLikesChangeText} (${formatNumber(avgLikes26)} vs ${formatNumber(avgLikes25)}). Isto demonstra que uma estratégia de curadoria — publicar menos, com mais relevância — mantém ou melhora o engagement por publicação.`
+            });
+
+            // Jan YoY comparison
+            const fbJan25 = SOCIAL_DATA['Jan 2025'].facebook;
+            const fbJan26 = SOCIAL_DATA['Jan 2026'].facebook;
+            const janPostChange = ((fbJan26.posts - fbJan25.posts) / fbJan25.posts * 100).toFixed(0);
+            const janAvgLikes25 = Math.round(fbJan25.gostos / fbJan25.posts);
+            const janAvgLikes26 = Math.round(fbJan26.gostos / fbJan26.posts);
+            const janAvgChange = ((janAvgLikes26 - janAvgLikes25) / janAvgLikes25 * 100).toFixed(0);
+
+            conclusions.push({
+                type:'insight',
+                text:`<strong>Qualidade vs Quantidade (Janeiro YoY):</strong> Em Janeiro, a redução de ${Math.abs(janPostChange)}% no volume de posts (${fbJan26.posts} vs ${fbJan25.posts}) resultou numa média de ${formatNumber(janAvgLikes26)} gostos/post vs ${formatNumber(janAvgLikes25)} em 2025 (${janAvgChange > 0 ? '+' : ''}${janAvgChange}%). ${Math.abs(janAvgChange) <= 15 ? 'Apesar de publicar menos, o engagement por post manteve-se estável.' : janAvgChange > 0 ? 'Menos posts produziram mais engagement individual.' : 'O alcance individual ajustou-se proporcionalmente.'}`
+            });
+
+            // Instagram growth
+            const ig25 = SOCIAL_DATA['Fev 2025'].instagram;
+            const ig26 = SOCIAL_DATA['Fev 2026'].instagram;
+            const igGrowth = ((ig26.gostos - ig25.gostos) / ig25.gostos * 100).toFixed(0);
+
+            conclusions.push({
+                type:'insight',
+                text:`<strong>Crescimento Instagram:</strong> Evolução significativa com crescimento de ${igGrowth}% em gostos de Fevereiro 2025 para Fevereiro 2026 (${formatNumber(ig25.gostos)} → ${formatNumber(ig26.gostos)}). O Instagram está a consolidar-se como canal complementar ao Facebook.`
+            });
+
+            // Alcance comparison
+            const janAlcChange = ((fbJan26.alcance - fbJan25.alcance) / fbJan25.alcance * 100).toFixed(0);
+
+            if (janAlcChange < 0) {
+                conclusions.push({
+                    type:'insight',
+                    text:`<strong>Alcance (Janeiro YoY):</strong> Diminuição de ${Math.abs(janAlcChange)}% no alcance total (${formatNumber(fbJan25.alcance)} → ${formatNumber(fbJan26.alcance)}). Embora o alcance agregado tenha reduzido com menos publicações, o engagement por post mantém-se robusto — priorizando qualidade de interacção sobre volume de impressões.`
+                });
+            }
+
+            return conclusions;
+        }
+
+        function renderSocialConclusions() {
+            const conclusions = generateSocialConclusions();
+            const conclusionsContainer = document.getElementById('socialConclusions');
+
+            if (conclusionsContainer) {
+                conclusionsContainer.innerHTML = conclusions.map(c =>
+                    `<div class="insight-box">${c.text}</div>`
+                ).join('');
+            }
+        }
+
+        // ===== TOP POSTS =====
+        function renderTopPosts() {
+            const fbContainer = document.getElementById('topPostsFB');
+            const igContainer = document.getElementById('topPostsIG');
+
+            fbContainer.innerHTML = '';
+            igContainer.innerHTML = '';
+
+            // Collect all FB posts across all periods into a single array
+            const allFbPosts = [];
+            const allIgPosts = [];
+
+            ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                const fbData = TOP_POSTS[period].facebook.byProgram;
+                const igData = TOP_POSTS[period].instagram.byProgram;
+
+                Object.entries(fbData).forEach(([prog, data]) => {
+                    allFbPosts.push({ prog, period, ...data });
+                });
+
+                Object.entries(igData).forEach(([prog, data]) => {
+                    allIgPosts.push({ prog, period, ...data });
+                });
+            });
+
+            // Sort globally by gostos descending
+            allFbPosts.sort((a, b) => b.gostos - a.gostos);
+            allIgPosts.sort((a, b) => b.gostos - a.gostos);
+
+            // Render FB with ranking numbers
+            allFbPosts.forEach((post, idx) => {
+                const rank = idx + 1;
+                const rankClass = rank <= 3 ? 'post-rank top3' : 'post-rank';
+                fbContainer.innerHTML += `<div class="post-card">
+                    <div class="${rankClass}">${rank}</div>
+                    <div class="post-period">${post.period}</div>
+                    <div class="post-program">${post.prog}</div>
+                    <div class="post-type">${post.tipo}</div>
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <div class="post-stat-label">Gostos</div>
+                            <div class="post-stat-value">${formatNumber(post.gostos)}</div>
+                        </div>
+                        <div class="post-stat">
+                            <div class="post-stat-label">Alcance</div>
+                            <div class="post-stat-value">${formatNumber(post.alcance)}</div>
+                        </div>
+                    </div>
+                    ${post.url ? `<div class="post-link"><a href="${post.url}" target="_blank">Ver Post →</a></div>` : ''}
+                </div>`;
+            });
+
+            // Render IG with ranking numbers
+            allIgPosts.forEach((post, idx) => {
+                const rank = idx + 1;
+                const rankClass = rank <= 3 ? 'post-rank top3' : 'post-rank';
+                igContainer.innerHTML += `<div class="post-card">
+                    <div class="${rankClass}">${rank}</div>
+                    <div class="post-period">${post.period}</div>
+                    <div class="post-program">${post.prog}</div>
+                    <div class="post-type">${post.tipo}</div>
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <div class="post-stat-label">Gostos</div>
+                            <div class="post-stat-value">${formatNumber(post.gostos)}</div>
+                        </div>
+                        <div class="post-stat">
+                            <div class="post-stat-label">Alcance</div>
+                            <div class="post-stat-value">${formatNumber(post.alcance)}</div>
+                        </div>
+                    </div>
+                    ${post.url ? `<div class="post-link"><a href="${post.url}" target="_blank">Ver Post →</a></div>` : ''}
+                </div>`;
+            });
+        }
+
+        // ===== PROGRAM STATS =====
+        function updateProgramStats() {
+            const selected = document.getElementById('programSelect').value;
+            const tbody = document.getElementById('programTableBody');
+
+            const rows = [];
+            ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'].forEach(period => {
+                const fbData = TOP_POSTS[period].facebook.byProgram[selected] || { gostos: 0, alcance: 0 };
+                const igData = TOP_POSTS[period].instagram.byProgram[selected] || { gostos: 0, alcance: 0 };
+
+                rows.push(`<tr>
+                    <td>${selected || 'Todos'}</td>
+                    <td>${period}</td>
+                    <td>${formatNumber(fbData.gostos)}</td>
+                    <td>${formatNumber(fbData.alcance)}</td>
+                    <td>-</td>
+                    <td>${formatNumber(igData.gostos)}</td>
+                </tr>`);
+            });
+
+            tbody.innerHTML = rows.join('');
+        }
+
+        // ===== FILE UPLOAD =====
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.onclick = () => fileInput.click();
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFileSelect({ target: { files } });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const workbook = XLSX.read(event.target.result, { type: 'binary' });
+                    document.getElementById('importStatus').style.display = 'block';
+                    document.getElementById('importMessage').textContent = `Arquivo carregado com sucesso: ${file.name}. Total de linhas: ${workbook.SheetNames.length}`;
+                } catch (error) {
+                    document.getElementById('importStatus').style.display = 'block';
+                    document.getElementById('importMessage').textContent = 'Erro ao processar ficheiro: ' + error.message;
+                }
+            };
+            reader.readAsBinaryString(file);
+        }
+
+        // ===== EXPORT FUNCTIONS =====
+        async function exportPDF() {
+            const btns = document.querySelectorAll('button[onclick="exportPDF()"]');
+            btns.forEach(b => { b.textContent = 'A preparar...'; b.disabled = true; b.style.opacity = '0.6'; });
+
+            // Save current tab state
+            const activeBtn = document.querySelector('#mainTabs .tab-btn.active');
+            const activeTabIdx = activeBtn ? Array.from(document.querySelectorAll('#mainTabs .tab-btn')).indexOf(activeBtn) : 0;
+
+            try {
+                // 1. Make all tabs and subtabs visible
+                document.body.classList.add('printing');
+                const allTabs = document.querySelectorAll('.tab-content');
+                const allSubtabs = document.querySelectorAll('.subtab-content');
+                allTabs.forEach(t => t.style.display = 'block');
+                allSubtabs.forEach(t => t.style.display = 'block');
+
+                // 2. Re-init charts that are now in visible containers
+                //    Use try/catch per chart so one failure doesn't block others
+                try { initCharts(); } catch(e) { console.warn('initCharts:', e); }
+                try { initSocialCharts('facebook'); } catch(e) { console.warn('FB charts:', e); }
+                try { initSocialCharts('instagram'); } catch(e) { console.warn('IG charts:', e); }
+
+                // 3. Wait for Chart.js animations to complete
+                await new Promise(r => setTimeout(r, 800));
+
+                // 4. Convert Chart.js canvases to static <img> for print fidelity
+                const canvasBackups = [];
+                document.querySelectorAll('canvas').forEach(canvas => {
+                    try {
+                        const dataUrl = canvas.toDataURL('image/png');
+                        if (!dataUrl || dataUrl === 'data:,') return; // skip empty canvases
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.style.cssText = `width:100%;height:auto;max-height:${canvas.parentElement?.style.height || '400px'}`;
+                        img.className = 'print-chart-img';
+                        canvasBackups.push({ canvas, img });
+                        canvas.parentElement.insertBefore(img, canvas);
+                        canvas.style.display = 'none';
+                    } catch(e) { /* canvas tainted or empty */ }
+                });
+
+                // 5. Small delay then print
+                await new Promise(r => setTimeout(r, 200));
+                window.print();
+
+                // 6. Restore after print dialog closes
+                await new Promise(r => setTimeout(r, 300));
+                canvasBackups.forEach(({ canvas, img }) => {
+                    canvas.style.display = '';
+                    img.remove();
+                });
+
+                // 7. Restore tab state
+                document.body.classList.remove('printing');
+                allTabs.forEach(t => t.style.display = '');
+                allSubtabs.forEach(t => t.style.display = '');
+                switchTab(activeTabIdx);
+
+            } catch (err) {
+                console.error('Erro ao preparar PDF:', err);
+                document.body.classList.remove('printing');
+                document.querySelectorAll('.tab-content').forEach(t => t.style.display = '');
+                document.querySelectorAll('.subtab-content').forEach(t => t.style.display = '');
+                switchTab(activeTabIdx);
+                alert('Erro ao preparar exportação. Pode usar Ctrl+P / Cmd+P como alternativa.');
+            } finally {
+                btns.forEach(b => { b.textContent = 'Exportar PDF'; b.disabled = false; b.style.opacity = '1'; });
+            }
+        }
+
+        function exportCSV() {
+            const csv = "Período,Share TV,Alcance Social\nJan 2025,9.3%,4319391\nFev 2025,9.0%,7200000\nJan 2026,7.1%,2177544\nFev 2026,6.7%,6825000";
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'zap-viva-dados.csv';
+            a.click();
+        }
+
+        function exportExcel() {
+            const data = [['Período', 'Share TV', 'Alcance Social'], ['Jan 2025', '9.3%', '4319391'], ['Fev 2025', '9.0%', '7200000'], ['Jan 2026', '7.1%', '2177544'], ['Fev 2026', '6.7%', '6825000']];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Dados');
+            XLSX.writeFile(wb, 'zap-viva-dados.xlsx');
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', initCharts);
+    </script>
+</body>
+</html>
