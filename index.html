@@ -19,7 +19,7 @@
 
     <style>
         :root {
-            --black: #f7f5f3;
+            --black: #e6e6e6;
             --dark: #ffffff;
             --grey: #777777;
             --light: #2d2d2d;
@@ -57,7 +57,7 @@
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 40px;
         }
 
         /* ===== HEADER ===== */
@@ -195,8 +195,8 @@
         }
 
         .kpi-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, #EDBA16, #d4a50f);
+            border: none;
             border-radius: 8px;
             padding: 20px;
             position: relative;
@@ -204,19 +204,13 @@
         }
 
         .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--accent), var(--gold));
+            display: none;
         }
 
         .kpi-label {
             font-size: 0.8rem;
             text-transform: uppercase;
-            color: var(--grey);
+            color: rgba(0,0,0,0.6);
             letter-spacing: 0.5px;
             margin-bottom: 8px;
             font-weight: 500;
@@ -226,13 +220,13 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--white);
+            color: #C43771;
             margin-bottom: 8px;
         }
 
         .kpi-change {
             font-size: 0.8rem;
-            color: var(--teal);
+            color: #a82d60;
         }
 
         /* ===== CHARTS ===== */
@@ -270,29 +264,29 @@
             text-align: center;
             margin-bottom: 25px;
             padding: 30px;
-            background: linear-gradient(135deg, #fff5f9, #ffeef4);
+            background: linear-gradient(135deg, #C43771, #a82d60);
             border-radius: 8px;
-            border: 1px solid var(--border);
+            border: none;
         }
 
         .followers-hero-main {
             font-family: 'JetBrains Mono', monospace;
             font-size: 3.5rem;
             font-weight: 700;
-            color: var(--gold);
+            color: #ffffff;
             line-height: 1;
             margin-bottom: 10px;
         }
 
         .followers-hero-label {
             font-size: 1rem;
-            color: var(--grey);
+            color: rgba(255,255,255,0.85);
             margin-bottom: 15px;
         }
 
         .followers-hero-comparison {
             font-size: 0.95rem;
-            color: var(--teal);
+            color: var(--gold);
         }
 
         /* ===== TABLES ===== */
@@ -395,28 +389,44 @@
         }
 
         .post-rank {
-            position: absolute;
-            top: -10px;
-            left: -10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 28px;
             height: 28px;
             border-radius: 50%;
             background: var(--accent);
-            color: #000;
+            color: #fff;
             font-weight: 800;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 0.75rem;
             font-family: 'JetBrains Mono', monospace;
-            box-shadow: 0 2px 6px rgba(196,55,113,0.4);
         }
 
         .post-rank.top3 {
             background: linear-gradient(135deg, #C43771, #EDBA16);
             width: 32px;
             height: 32px;
+            font-size: 0.85rem;
+        }
+
+        .top-posts-table .post-period {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--grey);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .top-posts-table .post-program {
+            font-weight: 600;
+            color: var(--accent);
             font-size: 0.9rem;
+        }
+
+        .top-posts-table .post-type {
+            font-size: 0.8rem;
+            color: var(--grey);
+            text-transform: uppercase;
         }
 
         .post-period {
@@ -624,7 +634,7 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 15px 20px;
             }
 
             .header-content {
@@ -927,7 +937,7 @@
 
                 <div class="top-posts-section">
                     <div class="top-posts-title">Top Posts - Facebook</div>
-                    <div class="posts-grid" id="topPostsFB"></div>
+                    <div class="table-container" id="topPostsFB"></div>
                 </div>
 
                 <div class="chart-container">
@@ -998,7 +1008,7 @@
 
                 <div class="top-posts-section">
                     <div class="top-posts-title">Top Posts - Instagram</div>
-                    <div class="posts-grid" id="topPostsIG"></div>
+                    <div class="table-container" id="topPostsIG"></div>
                 </div>
 
                 <div class="chart-container">
@@ -1672,12 +1682,12 @@
                         {
                             label: 'Alcance Instagram',
                             data: igAlcance,
-                            borderColor: '#E8698C',
-                            backgroundColor: 'rgba(232,105,140,0.1)',
+                            borderColor: '#3498DB',
+                            backgroundColor: 'rgba(52,152,219,0.1)',
                             borderWidth: 3,
                             tension: 0.4,
                             pointRadius: 6,
-                            pointBackgroundColor: '#E8698C',
+                            pointBackgroundColor: '#3498DB',
                             yAxisID: 'y',
                             fill: true
                         },
@@ -1768,7 +1778,7 @@
             const tbody = document.getElementById('correlationTableBody');
             tbody.innerHTML = periods.map((p, i) => {
                 const total = fbAlcance[i] + igAlcance[i];
-                const bgColor = i % 2 === 0 ? '#1a1a1a' : '#242424';
+                const bgColor = i % 2 === 0 ? '#faf8f6' : '#ffffff';
                 return `<tr style="background:${bgColor}">
                     <td><strong>${p}</strong></td>
                     <td>${shareValues[i]}%</td>
@@ -1886,8 +1896,7 @@
                     datasets: [{
                         data: Object.values(types),
                         backgroundColor: COLORS,
-                        borderColor: '#1a1a1a',
-
+                        borderColor: '#ffffff',
                         borderWidth: 2
                     }]
                 },
@@ -2078,8 +2087,7 @@
                         datasets: [{
                             data: sorted.map(s => s.val),
                             backgroundColor: COLORS,
-                            borderColor: '#1a1a1a',
-
+                            borderColor: '#ffffff',
                             borderWidth: 2
                         }]
                     },
@@ -2128,8 +2136,7 @@
                         datasets: [{
                             data: data,
                             backgroundColor: periodColors,
-                            borderColor: '#1a1a1a',
-
+                            borderColor: '#ffffff',
                             borderWidth: 2
                         }]
                     },
@@ -2307,14 +2314,40 @@
         }
 
         // ===== TOP POSTS =====
+        function renderTopPostsTable(posts, container) {
+            let html = `<table class="top-posts-table">
+                <thead><tr>
+                    <th>#</th>
+                    <th>Período</th>
+                    <th>Programa</th>
+                    <th>Tipo</th>
+                    <th style="text-align:right">Gostos</th>
+                    <th style="text-align:right">Alcance</th>
+                    <th></th>
+                </tr></thead><tbody>`;
+
+            posts.forEach((post, idx) => {
+                const rank = idx + 1;
+                const rankClass = rank <= 3 ? 'post-rank top3' : 'post-rank';
+                html += `<tr>
+                    <td><span class="${rankClass}">${rank}</span></td>
+                    <td class="post-period">${post.period}</td>
+                    <td class="post-program">${post.prog}</td>
+                    <td class="post-type">${post.tipo}</td>
+                    <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600">${formatNumber(post.gostos)}</td>
+                    <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600">${formatNumber(post.alcance)}</td>
+                    <td>${post.url ? `<a href="${post.url}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:0.8rem">Ver Post →</a>` : ''}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
         function renderTopPosts() {
             const fbContainer = document.getElementById('topPostsFB');
             const igContainer = document.getElementById('topPostsIG');
 
-            fbContainer.innerHTML = '';
-            igContainer.innerHTML = '';
-
-            // Collect all FB posts across all periods into a single array
             const allFbPosts = [];
             const allIgPosts = [];
 
@@ -2331,55 +2364,11 @@
                 });
             });
 
-            // Sort globally by gostos descending
             allFbPosts.sort((a, b) => b.gostos - a.gostos);
             allIgPosts.sort((a, b) => b.gostos - a.gostos);
 
-            // Render FB with ranking numbers
-            allFbPosts.forEach((post, idx) => {
-                const rank = idx + 1;
-                const rankClass = rank <= 3 ? 'post-rank top3' : 'post-rank';
-                fbContainer.innerHTML += `<div class="post-card">
-                    <div class="${rankClass}">${rank}</div>
-                    <div class="post-period">${post.period}</div>
-                    <div class="post-program">${post.prog}</div>
-                    <div class="post-type">${post.tipo}</div>
-                    <div class="post-stats">
-                        <div class="post-stat">
-                            <div class="post-stat-label">Gostos</div>
-                            <div class="post-stat-value">${formatNumber(post.gostos)}</div>
-                        </div>
-                        <div class="post-stat">
-                            <div class="post-stat-label">Alcance</div>
-                            <div class="post-stat-value">${formatNumber(post.alcance)}</div>
-                        </div>
-                    </div>
-                    ${post.url ? `<div class="post-link"><a href="${post.url}" target="_blank">Ver Post →</a></div>` : ''}
-                </div>`;
-            });
-
-            // Render IG with ranking numbers
-            allIgPosts.forEach((post, idx) => {
-                const rank = idx + 1;
-                const rankClass = rank <= 3 ? 'post-rank top3' : 'post-rank';
-                igContainer.innerHTML += `<div class="post-card">
-                    <div class="${rankClass}">${rank}</div>
-                    <div class="post-period">${post.period}</div>
-                    <div class="post-program">${post.prog}</div>
-                    <div class="post-type">${post.tipo}</div>
-                    <div class="post-stats">
-                        <div class="post-stat">
-                            <div class="post-stat-label">Gostos</div>
-                            <div class="post-stat-value">${formatNumber(post.gostos)}</div>
-                        </div>
-                        <div class="post-stat">
-                            <div class="post-stat-label">Alcance</div>
-                            <div class="post-stat-value">${formatNumber(post.alcance)}</div>
-                        </div>
-                    </div>
-                    ${post.url ? `<div class="post-link"><a href="${post.url}" target="_blank">Ver Post →</a></div>` : ''}
-                </div>`;
-            });
+            renderTopPostsTable(allFbPosts, fbContainer);
+            renderTopPostsTable(allIgPosts, igContainer);
         }
 
         // ===== PROGRAM STATS =====
