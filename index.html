@@ -1461,8 +1461,8 @@
                         {
                             label: '2024',
                             data: Object.values(TV_DATA[2024]),
-                            borderColor: '#E8698C',
-                            backgroundColor: 'rgba(232,105,140,0.1)',
+                            borderColor: '#808080',
+                            backgroundColor: 'rgba(128,128,128,0.1)',
                             tension: 0.4,
                             fill: false,
                             pointRadius: 3
@@ -1470,8 +1470,8 @@
                         {
                             label: '2025',
                             data: Object.values(TV_DATA[2025]),
-                            borderColor: '#C43771',
-                            backgroundColor: 'rgba(196,55,113,0.1)',
+                            borderColor: '#3498DB',
+                            backgroundColor: 'rgba(52,152,219,0.1)',
                             tension: 0.4,
                             fill: false,
                             pointRadius: 3
@@ -1545,7 +1545,7 @@
 
         function createYearlyShareLinesChart(ctx) {
             const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            const colorMap = { 2023: '#EDBA16', 2024: '#E8698C', 2025: '#C43771', 2026: '#3498DB' };
+            const colorMap = { 2023: '#EDBA16', 2024: '#808080', 2025: '#3498DB', 2026: '#C43771' };
 
             const datasets = [];
             [2023, 2024, 2025, 2026].forEach((year, idx) => {
@@ -1601,12 +1601,12 @@
                         {
                             label: '2024',
                             data: Object.values(TV_DATA[2024]),
-                            backgroundColor: '#EDBA16'
+                            backgroundColor: '#808080'
                         },
                         {
                             label: '2025',
                             data: Object.values(TV_DATA[2025]),
-                            backgroundColor: '#C43771'
+                            backgroundColor: '#3498DB'
                         }
                     ]
                 },
