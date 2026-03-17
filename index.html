@@ -2320,10 +2320,10 @@
                     <th>#</th>
                     <th>Período</th>
                     <th>Programa</th>
-                    <th>Tipo</th>
+                    <th></th>
                     <th style="text-align:right">Gostos</th>
                     <th style="text-align:right">Alcance</th>
-                    <th></th>
+                    <th>Tipo</th>
                 </tr></thead><tbody>`;
 
             posts.forEach((post, idx) => {
@@ -2333,10 +2333,10 @@
                     <td><span class="${rankClass}">${rank}</span></td>
                     <td class="post-period">${post.period}</td>
                     <td class="post-program">${post.prog}</td>
-                    <td class="post-type">${post.tipo}</td>
+                    <td>${post.url ? `<a href="${post.url}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:0.8rem">Ver Post →</a>` : ''}</td>
                     <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600">${formatNumber(post.gostos)}</td>
                     <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600">${formatNumber(post.alcance)}</td>
-                    <td>${post.url ? `<a href="${post.url}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:0.8rem">Ver Post →</a>` : ''}</td>
+                    <td class="post-type">${post.tipo}</td>
                 </tr>`;
             });
 
