@@ -149,6 +149,99 @@
             to { opacity: 1; }
         }
 
+        /* ===== TV SUBTABS ===== */
+        .tv-subtabs {
+            display: flex;
+            gap: 6px;
+            margin: 20px 0 25px 0;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tv-subtab-btn {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--grey);
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            letter-spacing: 0.2px;
+        }
+
+        .tv-subtab-btn:hover {
+            color: var(--accent);
+        }
+
+        .tv-subtab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tv-subtab-content {
+            display: none;
+        }
+
+        .tv-subtab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* ===== MINI KPI ROW ===== */
+        .mini-kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mini-kpi {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .mini-kpi-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: var(--grey);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .mini-kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .mini-kpi-value.gold { color: var(--gold); }
+        .mini-kpi-value.green { color: var(--green); }
+
+        .mini-kpi-sub {
+            font-size: 0.72rem;
+            color: var(--grey);
+            margin-top: 2px;
+        }
+
+        /* Channel badge */
+        .channel-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .channel-badge.zap-viva { background: rgba(196,55,113,0.12); color: #C43771; }
+        .channel-badge.zap-novelas { background: rgba(237,186,22,0.15); color: #b8920f; }
+
         /* ===== SUBTABS (for Redes Sociais) ===== */
         .subtabs {
             display: flex;
@@ -674,9 +767,10 @@
             /* Show ALL tabs and subtabs */
             .tab-content { display: block !important; page-break-inside: avoid; margin-bottom: 20px; }
             .subtab-content { display: block !important; page-break-inside: avoid; margin-bottom: 15px; }
+            .tv-subtab-content { display: block !important; page-break-inside: avoid; margin-bottom: 15px; }
 
             /* Hide navigation, buttons, import tab */
-            .tabs, .subtabs, .btn, button, #tab-5 { display: none !important; }
+            .tabs, .subtabs, .tv-subtabs, .btn, button, #tab-5 { display: none !important; }
             .header-right button { display: none !important; }
 
             /* Section separators */
@@ -737,11 +831,13 @@
 
         /* Class added via JS before printing */
         body.printing .tab-content,
-        body.printing .subtab-content {
+        body.printing .subtab-content,
+        body.printing .tv-subtab-content {
             display: block !important;
         }
         body.printing .tabs,
         body.printing .subtabs,
+        body.printing .tv-subtabs,
         body.printing #tab-5 {
             display: none !important;
         }
@@ -841,42 +937,296 @@
             </div>
         </div>
 
-        <!-- TAB 2: AUDIÊNCIAS TV -->
+        <!-- TAB 2: AUDIÊNCIAS TV (ENRICHED v4) -->
         <div class="tab-content" id="tab-1" data-print-title="Audiências TV">
-            <div class="chart-container">
-                <div class="chart-title">Share Mensal por Ano - ZAP Viva</div>
-                <div class="chart-description">Evolução mensal de audiências (2023-2026). Cada linha representa um ano diferente.</div>
-                <div class="chart-wrapper">
-                    <canvas id="chartYearlyShareLines"></canvas>
+
+            <!-- TV Sub-tabs -->
+            <div class="tv-subtabs" id="tvSubtabs">
+                <button class="tv-subtab-btn active" onclick="switchTVSubtab(0)">📊 Share & Ranking</button>
+                <button class="tv-subtab-btn" onclick="switchTVSubtab(1)">📦 Pacotes</button>
+                <button class="tv-subtab-btn" onclick="switchTVSubtab(2)">🎬 Programas TV</button>
+                <button class="tv-subtab-btn" onclick="switchTVSubtab(3)">👥 Penetração & Estratos</button>
+            </div>
+
+            <!-- ========== SUB-TAB 0: SHARE & RANKING ========== -->
+            <div class="tv-subtab-content active" id="tv-subtab-0" data-print-title="Share & Ranking">
+
+                <!-- KPI summary -->
+                <div class="mini-kpi-row">
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">ZAP VIVA Share (Última Sem.)</div>
+                        <div class="mini-kpi-value">8,9%</div>
+                        <div class="mini-kpi-sub">S9 · 23 Fev-1 Mar 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">ZAP NOVELAS Share (Última Sem.)</div>
+                        <div class="mini-kpi-value gold">18,3%</div>
+                        <div class="mini-kpi-sub">S9 · 23 Fev-1 Mar 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Boxes Ativos</div>
+                        <div class="mini-kpi-value green">181</div>
+                        <div class="mini-kpi-sub">Painel S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Posição ZAP VIVA</div>
+                        <div class="mini-kpi-value">4º</div>
+                        <div class="mini-kpi-sub">Ranking Mensal Jan 2026</div>
+                    </div>
+                </div>
+
+                <!-- Share Evolution Chart (existing, preserved) -->
+                <div class="chart-container">
+                    <div class="chart-title">Evolução do Share Mensal - ZAP Viva (2023-2026)</div>
+                    <div class="chart-description">Cada linha representa um ano diferente. Dados do painel de audimetria ZAP.</div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartYearlyShareLines"></canvas>
+                    </div>
+                </div>
+
+                <!-- Weekly ranking evolution chart -->
+                <div class="chart-container">
+                    <div class="chart-title">Ranking Semanal de Canais — Share % (2026)</div>
+                    <div class="chart-description">Evolução semanal dos principais canais do painel ZAP. Semanas 4 a 9 de 2026.</div>
+                    <div class="chart-wrapper" style="height: 400px;">
+                        <canvas id="chartWeeklyRanking"></canvas>
+                    </div>
+                </div>
+
+                <!-- Comparison Table (existing, preserved) -->
+                <div class="table-container">
+                    <div class="chart-title" style="margin-bottom: 15px;">Comparação Anual Mês a Mês (ZAP Viva)</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mês</th>
+                                <th>2023</th>
+                                <th>2024</th>
+                                <th>Var. % YoY</th>
+                                <th>2025</th>
+                                <th>Var. % YoY</th>
+                                <th>2026</th>
+                                <th>Var. % YoY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tvComparisonTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- Monthly ranking table -->
+                <div class="table-container">
+                    <div class="chart-title" style="margin-bottom: 15px;">Ranking Mensal de Canais — Share %</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Canal</th>
+                                <th>Abr 2024</th>
+                                <th>Dez 2025</th>
+                                <th>Jan 2026</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyRankingTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Comparação Mensal: 2024 vs 2025</div>
+                    <div class="chart-description">Share mensal lado a lado para análise directa</div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartMonthlyComparison"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <div class="table-container">
-                <div class="chart-title" style="margin-bottom: 15px;">Comparação Anual Mês a Mês</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mês</th>
-                            <th>2023</th>
-                            <th>2024</th>
-                            <th>Var. % YoY</th>
-                            <th>2025</th>
-                            <th>Var. % YoY</th>
-                            <th>2026</th>
-                            <th>Var. % YoY</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tvComparisonTable"></tbody>
-                </table>
-            </div>
+            <!-- ========== SUB-TAB 1: PACOTES ========== -->
+            <div class="tv-subtab-content" id="tv-subtab-1" data-print-title="Pacotes">
 
-            <div class="chart-container">
-                <div class="chart-title">Comparação Mensal: 2024 vs 2025</div>
-                <div class="chart-description">Share mensal lado a lado para análise directa</div>
-                <div class="chart-wrapper">
-                    <canvas id="chartMonthlyComparison"></canvas>
+                <div class="mini-kpi-row">
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Pacote c/ Maior Share VIVA</div>
+                        <div class="mini-kpi-value">MINI</div>
+                        <div class="mini-kpi-sub">9,3% — S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Pacote c/ Maior Share NOVELAS</div>
+                        <div class="mini-kpi-value gold">MINI</div>
+                        <div class="mini-kpi-sub">18,5% — S9 2026</div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="chart-container">
+                        <div class="chart-title">ZAP VIVA — Share por Pacote</div>
+                        <div class="chart-description">Evolução semanal do share por pacote (Premium, MAX, MAIS, MINI)</div>
+                        <div class="chart-wrapper" style="height: 350px;">
+                            <canvas id="chartPacotesViva"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">ZAP NOVELAS — Share por Pacote</div>
+                        <div class="chart-description">Evolução semanal do share por pacote (Premium, MAX, MAIS, MINI)</div>
+                        <div class="chart-wrapper" style="height: 350px;">
+                            <canvas id="chartPacotesNovelas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables side by side -->
+                <div class="two-column">
+                    <div class="table-container">
+                        <div class="chart-title" style="margin-bottom: 10px;"><span class="channel-badge zap-viva">ZAP VIVA</span> Dados por Semana</div>
+                        <table>
+                            <thead><tr><th>Semana</th><th>Premium</th><th>MAX</th><th>MAIS</th><th>MINI</th></tr></thead>
+                            <tbody id="tablePacotesViva"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-container">
+                        <div class="chart-title" style="margin-bottom: 10px;"><span class="channel-badge zap-novelas">ZAP NOVELAS</span> Dados por Semana</div>
+                        <table>
+                            <thead><tr><th>Semana</th><th>Premium</th><th>MAX</th><th>MAIS</th><th>MINI</th></tr></thead>
+                            <tbody id="tablePacotesNovelas"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Última Semana — Pacotes (Barras Comparativas)</div>
+                    <div class="chart-description">S9 (23 Fev - 1 Mar 2026) — ZAP VIVA vs ZAP NOVELAS</div>
+                    <div class="chart-wrapper" style="height: 300px;">
+                        <canvas id="chartPacotesCompare"></canvas>
+                    </div>
                 </div>
             </div>
+
+            <!-- ========== SUB-TAB 2: PROGRAMAS TV ========== -->
+            <div class="tv-subtab-content" id="tv-subtab-2" data-print-title="Programas TV">
+
+                <div class="mini-kpi-row">
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Programa Líder (Últ. Sem.)</div>
+                        <div class="mini-kpi-value" style="font-size:1rem;">CLUBE Z Sáb</div>
+                        <div class="mini-kpi-sub">3,9% — S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Grandes Manhãs</div>
+                        <div class="mini-kpi-value">3,6%</div>
+                        <div class="mini-kpi-sub">S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Na Placa</div>
+                        <div class="mini-kpi-value">3,1%</div>
+                        <div class="mini-kpi-sub">S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Tá a Bater</div>
+                        <div class="mini-kpi-value">3,0%</div>
+                        <div class="mini-kpi-sub">S9 2026</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Audiência Média Semanal por Programa — ZAP VIVA</div>
+                    <div class="chart-description">Rating % dos programas de produção própria (Semanas 4 a 9 de 2026)</div>
+                    <div class="chart-wrapper" style="height: 400px;">
+                        <canvas id="chartProgramasTV"></canvas>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="chart-title" style="margin-bottom: 15px;">Dados Detalhados — Audiência Programas (%)</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Semana</th>
+                                <th>Grandes Manhãs</th>
+                                <th>Tá a Bater</th>
+                                <th>Viva a Tarde</th>
+                                <th>Na Placa</th>
+                                <th>REVIVA</th>
+                                <th>ZAP NEWS</th>
+                                <th>CLUBE Z Sáb</th>
+                                <th>CLUBE Z Dom</th>
+                                <th>DA JAJÃO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableProgramasTV"></tbody>
+                    </table>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Conclusões Programas TV</div>
+                    <div class="insight-box">
+                        <strong>Grandes Manhãs</strong> mantém-se como o programa diário mais consistente, com audiência entre 3,3% e 5,0% em 2026. Registou o pico de 6,8% em Maio 2024.
+                    </div>
+                    <div class="insight-box">
+                        <strong>CLUBE Z (Sábado)</strong> destaca-se como surpreendente líder pontual, atingindo 3,9% na S9. O formato de fim-de-semana atrai audiência elevada.
+                    </div>
+                    <div class="insight-box">
+                        <strong>DA JAJÃO</strong> estreou com 4,2% na S5 mas tem sido irregular. Necessita estabilização de audiência.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SUB-TAB 3: PENETRAÇÃO & ESTRATOS ========== -->
+            <div class="tv-subtab-content" id="tv-subtab-3" data-print-title="Penetração & Estratos">
+
+                <div class="mini-kpi-row">
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Penetração ZAP NOVELAS (Máx)</div>
+                        <div class="mini-kpi-value gold">31,1%</div>
+                        <div class="mini-kpi-sub">S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Penetração ZAP VIVA (Máx)</div>
+                        <div class="mini-kpi-value">8,3%</div>
+                        <div class="mini-kpi-sub">S9 2026</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mini-kpi-label">Estrato Preponderante (Últ.)</div>
+                        <div class="mini-kpi-value green">A/B e D</div>
+                        <div class="mini-kpi-sub">S9 · Share 10,1%</div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="chart-container">
+                        <div class="chart-title">Penetração Máxima Semanal</div>
+                        <div class="chart-description">Audiência máxima alcançada por semana (% dos boxes)</div>
+                        <div class="chart-wrapper" style="height: 300px;">
+                            <canvas id="chartPenetracao"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Estrato Preponderante — ZAP VIVA</div>
+                        <div class="chart-description">Segmento socioeconómico com maior share por semana</div>
+                        <div class="table-container" style="border:none; padding:0; margin:0;">
+                            <table>
+                                <thead><tr><th>Semana</th><th>Estrato</th><th>Share %</th></tr></thead>
+                                <tbody id="tableEstratos"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="chart-title" style="margin-bottom: 15px;">Penetração Canais Próprios — Detalhe</div>
+                    <table>
+                        <thead><tr><th>Semana</th><th>ZAP NOVELAS %</th><th>ZAP VIVA %</th><th>Programa Destaque ZAP VIVA</th></tr></thead>
+                        <tbody id="tablePenetracao"></tbody>
+                    </table>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Conclusões</div>
+                    <div class="insight-box">
+                        <strong>ZAP NOVELAS</strong> lidera em penetração com 31,1% na S9, mas registou queda face aos 42,5% de Mai 2024. ZAP VIVA mantém penetração entre 8,3% e 13,0%.
+                    </div>
+                    <div class="insight-box">
+                        <strong>Estrato socioeconómico:</strong> Os segmentos D e E são preponderantes na maioria das semanas, mas a S9 registou presença nos estratos A/B e D simultaneamente — sinal de diversificação de audiência.
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- TAB 3: REDES SOCIAIS -->
@@ -1367,7 +1717,8 @@
 
         // ===== TAB SWITCHING =====
         function switchTab(index, type) {
-            const tabs = document.querySelectorAll(`[id^="tab-"]`);
+            // Only select direct main tabs (not tv-subtab-* or subtab-*)
+            const tabs = document.querySelectorAll('.tab-content');
             const btns = document.querySelectorAll('#mainTabs .tab-btn');
 
             tabs.forEach(t => t.classList.remove('active'));
@@ -1377,11 +1728,31 @@
             document.querySelectorAll('#mainTabs .tab-btn')[index].classList.add('active');
             initCharts();
 
+            // Restore TV subtab active state when returning to Audiências TV
+            if (index === 1) {
+                const anyActive = document.querySelector('.tv-subtab-content.active');
+                if (!anyActive) {
+                    document.getElementById('tv-subtab-0').classList.add('active');
+                }
+            }
+
+            // Quando o tab Audiências TV é activado, inicializar sub-tab activo
+            if (index === 1) {
+                setTimeout(() => {
+                    const activeTV = document.querySelector('.tv-subtab-btn.active');
+                    const activeTVIdx = activeTV ? Array.from(document.querySelectorAll('.tv-subtab-btn')).indexOf(activeTV) : 0;
+                    if (activeTVIdx === 0) initShareRankingCharts();
+                    else if (activeTVIdx === 1) initPacotesCharts();
+                    else if (activeTVIdx === 2) initProgramasTVCharts();
+                    else if (activeTVIdx === 3) initPenetracaoCharts();
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
+            }
+
             // Quando o tab Redes Sociais é activado, inicializar o sub-tab Facebook
             if (index === 2) {
                 setTimeout(() => {
                     initSocialCharts('facebook');
-                    // Forçar resize para recalcular dimensões dos canvas
                     window.dispatchEvent(new Event('resize'));
                 }, 100);
             }
@@ -2448,14 +2819,19 @@
                 document.body.classList.add('printing');
                 const allTabs = document.querySelectorAll('.tab-content');
                 const allSubtabs = document.querySelectorAll('.subtab-content');
+                const allTVSubtabs = document.querySelectorAll('.tv-subtab-content');
                 allTabs.forEach(t => t.style.display = 'block');
                 allSubtabs.forEach(t => t.style.display = 'block');
+                allTVSubtabs.forEach(t => t.style.display = 'block');
 
                 // 2. Re-init charts that are now in visible containers
-                //    Use try/catch per chart so one failure doesn't block others
                 try { initCharts(); } catch(e) { console.warn('initCharts:', e); }
                 try { initSocialCharts('facebook'); } catch(e) { console.warn('FB charts:', e); }
                 try { initSocialCharts('instagram'); } catch(e) { console.warn('IG charts:', e); }
+                try { initShareRankingCharts(); } catch(e) { console.warn('Ranking charts:', e); }
+                try { initPacotesCharts(); } catch(e) { console.warn('Pacotes charts:', e); }
+                try { initProgramasTVCharts(); } catch(e) { console.warn('Programas TV charts:', e); }
+                try { initPenetracaoCharts(); } catch(e) { console.warn('Penetração charts:', e); }
 
                 // 3. Wait for Chart.js animations to complete
                 await new Promise(r => setTimeout(r, 800));
@@ -2491,6 +2867,7 @@
                 document.body.classList.remove('printing');
                 allTabs.forEach(t => t.style.display = '');
                 allSubtabs.forEach(t => t.style.display = '');
+                allTVSubtabs.forEach(t => t.style.display = '');
                 switchTab(activeTabIdx);
 
             } catch (err) {
@@ -2498,6 +2875,7 @@
                 document.body.classList.remove('printing');
                 document.querySelectorAll('.tab-content').forEach(t => t.style.display = '');
                 document.querySelectorAll('.subtab-content').forEach(t => t.style.display = '');
+                document.querySelectorAll('.tv-subtab-content').forEach(t => t.style.display = '');
                 switchTab(activeTabIdx);
                 alert('Erro ao preparar exportação. Pode usar Ctrl+P / Cmd+P como alternativa.');
             } finally {
@@ -2523,8 +2901,363 @@
             XLSX.writeFile(wb, 'zap-viva-dados.xlsx');
         }
 
+        // =====================================================
+        // ===== AUDIMETRIA TV DATA (from Excel compilation) =====
+        // =====================================================
+
+        const RANKING_SEMANAL = [
+            {ano:2024, sem:21, periodo:'20-26 Mai', boxes:0, zapNovelas:19.2, zapViva:9.7, sicK:11.2, blast:9.0, panda:7.8, tln:5.2, tvZimbo:4.6, tpa1:3.3, girassolTv:1.7, kanucaTv:2.8},
+            {ano:2026, sem:4, periodo:'19-25 Jan', boxes:194, zapNovelas:15.9, zapViva:8.8, sicK:9.4, blast:12.6, panda:8.2, tln:4.7, tvZimbo:4.7, tpa1:3.9, girassolTv:2.2, kanucaTv:2.9},
+            {ano:2026, sem:5, periodo:'26 Jan-1 Fev', boxes:198, zapNovelas:15.8, zapViva:8.4, sicK:9.7, blast:11.4, panda:8.1, tln:3.8, tvZimbo:4.6, tpa1:4.1, girassolTv:2.9, kanucaTv:2.5},
+            {ano:2026, sem:6, periodo:'2-8 Fev', boxes:205, zapNovelas:14.7, zapViva:6.8, sicK:11.4, blast:14.8, panda:7.3, tln:5.5, tvZimbo:3.8, tpa1:2.7, girassolTv:2.9, kanucaTv:3.5},
+            {ano:2026, sem:7, periodo:'9-15 Fev', boxes:196, zapNovelas:16.0, zapViva:7.9, sicK:9.8, blast:11.5, panda:8.1, tln:5.5, tvZimbo:4.8, tpa1:3.0, girassolTv:3.0, kanucaTv:2.9},
+            {ano:2026, sem:8, periodo:'16-22 Fev', boxes:184, zapNovelas:15.9, zapViva:8.1, sicK:11.5, blast:12.3, panda:7.7, tln:4.7, tvZimbo:5.0, tpa1:2.9, girassolTv:2.7, kanucaTv:2.4},
+            {ano:2026, sem:9, periodo:'23 Fev-1 Mar', boxes:181, zapNovelas:18.3, zapViva:8.9, sicK:12.4, blast:10.8, panda:5.9, tln:6.3, tvZimbo:4.3, tpa1:3.2, girassolTv:2.8, kanucaTv:2.6},
+        ];
+
+        const RANKING_MENSAL = {
+            canais: ['ZAP NOVELAS','ZAP VIVA','SIC K','BLAST','PANDA','TLN','TV ZIMBO','TPA 1','GIRASSOL TV','KANUCA TV','TV GLOBO ON','TPA 2'],
+            'Abr 2024': [18.4, 8.4, 11.6, 10.4, 8.0, 5.0, 4.1, 3.0, 2.0, 3.3, null, 1.3],
+            'Dez 2025': [19.2, 8.1, 8.6, 9.9, 7.8, 6.1, 4.9, 3.2, 1.6, 1.9, 2.3, 2.4],
+            'Jan 2026': [17.5, 7.1, 9.7, 12.8, 7.8, 5.3, 4.5, 3.6, null, 2.2, 3.0, null],
+        };
+
+        const PACOTES_VIVA = [
+            {sem:'S21 Mai24', premium:5.6, max:7.6, mais:8.8, mini:10.2},
+            {sem:'S4 Jan26', premium:4.9, max:5.3, mais:7.5, mini:9.0},
+            {sem:'S5 Jan-Fev26', premium:2.2, max:6.4, mais:8.2, mini:8.5},
+            {sem:'S6 Fev26', premium:3.7, max:7.0, mais:9.6, mini:6.8},
+            {sem:'S7 Fev26', premium:3.0, max:6.4, mais:7.1, mini:8.1},
+            {sem:'S8 Fev26', premium:11.5, max:4.8, mais:6.6, mini:8.2},
+            {sem:'S9 Fev-Mar26', premium:7.5, max:4.1, mais:4.3, mini:9.3},
+        ];
+
+        const PACOTES_NOVELAS = [
+            {sem:'S21 Mai24', premium:18.1, max:17.7, mais:18.1, mini:19.5},
+            {sem:'S4 Jan26', premium:12.7, max:14.1, mais:15.3, mini:16.0},
+            {sem:'S5 Jan-Fev26', premium:10.5, max:11.2, mais:12.8, mini:16.1},
+            {sem:'S6 Fev26', premium:18.7, max:9.9, mais:15.9, mini:14.9},
+            {sem:'S7 Fev26', premium:18.2, max:9.6, mais:14.8, mini:16.4},
+            {sem:'S8 Fev26', premium:9.8, max:11.0, mais:15.1, mini:16.1},
+            {sem:'S9 Fev-Mar26', premium:14.1, max:15.5, mais:17.6, mini:18.5},
+        ];
+
+        const PROGRAMAS_TV = [
+            {sem:'S21 Mai24', grandesManhas:6.8, taABater:6.0, vivaATarde:6.5, naPlaca:8.0, reviva:5.9, zapNews:null, clubeZSab:null, clubeZDom:null, daJajao:null},
+            {sem:'S4 Jan26', grandesManhas:5.0, taABater:3.0, vivaATarde:2.4, naPlaca:3.5, reviva:2.6, zapNews:null, clubeZSab:null, clubeZDom:null, daJajao:null},
+            {sem:'S5 Jan-Fev26', grandesManhas:4.9, taABater:3.9, vivaATarde:2.7, naPlaca:3.0, reviva:2.2, zapNews:2.5, clubeZSab:2.9, clubeZDom:3.1, daJajao:4.2},
+            {sem:'S6 Fev26', grandesManhas:3.8, taABater:3.5, vivaATarde:2.4, naPlaca:2.5, reviva:null, zapNews:1.7, clubeZSab:0.6, clubeZDom:2.1, daJajao:null},
+            {sem:'S7 Fev26', grandesManhas:3.7, taABater:3.4, vivaATarde:2.6, naPlaca:2.8, reviva:null, zapNews:2.2, clubeZSab:3.7, clubeZDom:0.5, daJajao:null},
+            {sem:'S8 Fev26', grandesManhas:3.3, taABater:2.8, vivaATarde:2.1, naPlaca:2.0, reviva:1.5, zapNews:2.0, clubeZSab:3.0, clubeZDom:1.4, daJajao:null},
+            {sem:'S9 Fev-Mar26', grandesManhas:3.6, taABater:3.0, vivaATarde:2.8, naPlaca:3.1, reviva:1.1, zapNews:1.6, clubeZSab:3.9, clubeZDom:2.4, daJajao:1.6},
+        ];
+
+        const PENETRACAO = [
+            {sem:'S21 Mai24', zapNovelas:42.5, zapViva:13.0, programa:'VIVA+ ESPECIAL BENGUELA'},
+            {sem:'S7 Fev26', zapNovelas:26.7, zapViva:null, programa:''},
+            {sem:'S8 Fev26', zapNovelas:26.7, zapViva:11.6, programa:'FILME HORA DO RUSH 3'},
+            {sem:'S9 Fev-Mar26', zapNovelas:31.1, zapViva:8.3, programa:'UEP 2025 CASTING SEMANAL LUANDA'},
+        ];
+
+        const ESTRATOS = [
+            {sem:'S21 Mai24', estrato:'A/B e D', share:10.1},
+            {sem:'S4 Jan26', estrato:'D', share:7.9},
+            {sem:'S5 Jan-Fev26', estrato:'E', share:8.5},
+            {sem:'S6 Fev26', estrato:'E', share:null},
+            {sem:'S7 Fev26', estrato:'D', share:null},
+            {sem:'S8 Fev26', estrato:'C', share:null},
+            {sem:'S9 Fev-Mar26', estrato:'A/B e D', share:10.1},
+        ];
+
+        // ===== TV SUB-TAB SWITCHING =====
+        function switchTVSubtab(index) {
+            const tabs = document.querySelectorAll('.tv-subtab-content');
+            const btns = document.querySelectorAll('#tvSubtabs .tv-subtab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            btns.forEach(b => b.classList.remove('active'));
+            document.getElementById(`tv-subtab-${index}`).classList.add('active');
+            btns[index].classList.add('active');
+
+            // Initialize charts for the selected sub-tab
+            setTimeout(() => {
+                if (index === 0) initShareRankingCharts();
+                else if (index === 1) initPacotesCharts();
+                else if (index === 2) initProgramasTVCharts();
+                else if (index === 3) initPenetracaoCharts();
+                window.dispatchEvent(new Event('resize'));
+            }, 50);
+        }
+
+        // ===== SHARE & RANKING CHARTS =====
+        function initShareRankingCharts() {
+            destroyChartOnCanvas('chartWeeklyRanking');
+            const ctx = document.getElementById('chartWeeklyRanking')?.getContext('2d');
+            if (!ctx) return;
+
+            const semanas2026 = RANKING_SEMANAL.filter(r => r.ano === 2026);
+            const labels = semanas2026.map(r => `S${r.sem}`);
+            const channels = [
+                {key:'zapNovelas', label:'ZAP NOVELAS', color:'#EDBA16', width:3},
+                {key:'zapViva', label:'ZAP VIVA', color:'#C43771', width:3},
+                {key:'blast', label:'BLAST', color:'#3498DB', width:1.5},
+                {key:'sicK', label:'SIC K', color:'#9B59B6', width:1.5},
+                {key:'panda', label:'PANDA', color:'#2d8f5e', width:1.5},
+                {key:'tln', label:'TLN', color:'#E67E22', width:1.5},
+                {key:'tvZimbo', label:'TV ZIMBO', color:'#808080', width:1},
+            ];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: channels.map(ch => ({
+                        label: ch.label,
+                        data: semanas2026.map(r => r[ch.key]),
+                        borderColor: ch.color,
+                        borderWidth: ch.width,
+                        tension: 0.3,
+                        pointRadius: ch.width > 2 ? 5 : 3,
+                        pointBackgroundColor: ch.color,
+                        fill: false
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color:'#444', font:{size:11, weight:'bold'}, padding:12, usePointStyle:true } },
+                        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw}%` } }
+                    },
+                    scales: {
+                        y: { ticks:{color:'#777', callback:v=>v+'%'}, grid:{color:'#e0dbd6'} },
+                        x: { ticks:{color:'#777'}, grid:{color:'#e0dbd6'} }
+                    }
+                }
+            });
+
+            // Monthly ranking table
+            const tbody = document.getElementById('monthlyRankingTable');
+            if (tbody) {
+                const periods = ['Abr 2024','Dez 2025','Jan 2026'];
+                tbody.innerHTML = RANKING_MENSAL.canais.map((canal, i) => {
+                    const vals = periods.map(p => RANKING_MENSAL[p][i]);
+                    const isZap = canal.includes('ZAP');
+                    return `<tr>
+                        <td><strong${isZap ? ' style="color:var(--accent)"' : ''}>${canal}</strong></td>
+                        ${vals.map(v => `<td>${v !== null ? v + '%' : '—'}</td>`).join('')}
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        // ===== PACOTES CHARTS =====
+        function initPacotesCharts() {
+            ['chartPacotesViva','chartPacotesNovelas','chartPacotesCompare'].forEach(destroyChartOnCanvas);
+
+            const pacoteColors = {Premium:'#C43771', MAX:'#EDBA16', MAIS:'#3498DB', MINI:'#2d8f5e'};
+            const pacoteKeys = ['premium','max','mais','mini'];
+            const pacoteLabels = ['Premium','MAX','MAIS','MINI'];
+
+            // ZAP VIVA chart
+            const ctx1 = document.getElementById('chartPacotesViva')?.getContext('2d');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type:'line',
+                    data:{
+                        labels: PACOTES_VIVA.map(r=>r.sem),
+                        datasets: pacoteKeys.map((k,i)=>({
+                            label: pacoteLabels[i],
+                            data: PACOTES_VIVA.map(r=>r[k]),
+                            borderColor: pacoteColors[pacoteLabels[i]],
+                            borderWidth: 2.5,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: pacoteColors[pacoteLabels[i]],
+                            fill: false
+                        }))
+                    },
+                    options:{
+                        responsive:true, maintainAspectRatio:false,
+                        plugins:{legend:{labels:{color:'#444',font:{size:11,weight:'bold'}}}},
+                        scales:{
+                            y:{ticks:{color:'#777',callback:v=>v+'%'},grid:{color:'#e0dbd6'}},
+                            x:{ticks:{color:'#777',maxRotation:45,font:{size:9}},grid:{color:'#e0dbd6'}}
+                        }
+                    }
+                });
+            }
+
+            // ZAP NOVELAS chart
+            const ctx2 = document.getElementById('chartPacotesNovelas')?.getContext('2d');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type:'line',
+                    data:{
+                        labels: PACOTES_NOVELAS.map(r=>r.sem),
+                        datasets: pacoteKeys.map((k,i)=>({
+                            label: pacoteLabels[i],
+                            data: PACOTES_NOVELAS.map(r=>r[k]),
+                            borderColor: pacoteColors[pacoteLabels[i]],
+                            borderWidth: 2.5,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: pacoteColors[pacoteLabels[i]],
+                            fill: false
+                        }))
+                    },
+                    options:{
+                        responsive:true, maintainAspectRatio:false,
+                        plugins:{legend:{labels:{color:'#444',font:{size:11,weight:'bold'}}}},
+                        scales:{
+                            y:{ticks:{color:'#777',callback:v=>v+'%'},grid:{color:'#e0dbd6'}},
+                            x:{ticks:{color:'#777',maxRotation:45,font:{size:9}},grid:{color:'#e0dbd6'}}
+                        }
+                    }
+                });
+            }
+
+            // Comparison bar chart (last week)
+            const ctx3 = document.getElementById('chartPacotesCompare')?.getContext('2d');
+            if (ctx3) {
+                const lastViva = PACOTES_VIVA[PACOTES_VIVA.length-1];
+                const lastNovelas = PACOTES_NOVELAS[PACOTES_NOVELAS.length-1];
+                new Chart(ctx3, {
+                    type:'bar',
+                    data:{
+                        labels: pacoteLabels,
+                        datasets:[
+                            {label:'ZAP VIVA', data:pacoteKeys.map(k=>lastViva[k]), backgroundColor:'#C43771'},
+                            {label:'ZAP NOVELAS', data:pacoteKeys.map(k=>lastNovelas[k]), backgroundColor:'#EDBA16'},
+                        ]
+                    },
+                    options:{
+                        responsive:true, maintainAspectRatio:false,
+                        plugins:{legend:{labels:{color:'#444',font:{size:12,weight:'bold'}}}},
+                        scales:{
+                            y:{ticks:{color:'#777',callback:v=>v+'%'},grid:{color:'#e0dbd6'}},
+                            x:{ticks:{color:'#777'},grid:{color:'#e0dbd6'}}
+                        }
+                    }
+                });
+            }
+
+            // Tables
+            const tbViva = document.getElementById('tablePacotesViva');
+            if (tbViva) {
+                tbViva.innerHTML = PACOTES_VIVA.map(r =>
+                    `<tr><td><strong>${r.sem}</strong></td><td>${r.premium}%</td><td>${r.max}%</td><td>${r.mais}%</td><td>${r.mini}%</td></tr>`
+                ).join('');
+            }
+            const tbNovelas = document.getElementById('tablePacotesNovelas');
+            if (tbNovelas) {
+                tbNovelas.innerHTML = PACOTES_NOVELAS.map(r =>
+                    `<tr><td><strong>${r.sem}</strong></td><td>${r.premium}%</td><td>${r.max}%</td><td>${r.mais}%</td><td>${r.mini}%</td></tr>`
+                ).join('');
+            }
+        }
+
+        // ===== PROGRAMAS TV CHARTS =====
+        function initProgramasTVCharts() {
+            destroyChartOnCanvas('chartProgramasTV');
+            const ctx = document.getElementById('chartProgramasTV')?.getContext('2d');
+            if (!ctx) return;
+
+            const sem2026 = PROGRAMAS_TV.filter(r => r.sem.includes('26'));
+            const labels = sem2026.map(r => r.sem);
+            const progs = [
+                {key:'grandesManhas', label:'Grandes Manhãs', color:'#C43771'},
+                {key:'taABater', label:'Tá a Bater', color:'#EDBA16'},
+                {key:'vivaATarde', label:'Viva a Tarde', color:'#3498DB'},
+                {key:'naPlaca', label:'Na Placa', color:'#9B59B6'},
+                {key:'reviva', label:'REVIVA', color:'#808080'},
+                {key:'zapNews', label:'ZAP NEWS', color:'#E67E22'},
+                {key:'clubeZSab', label:'CLUBE Z Sáb', color:'#2d8f5e'},
+                {key:'clubeZDom', label:'CLUBE Z Dom', color:'#1ABC9C'},
+                {key:'daJajao', label:'DA JAJÃO', color:'#E8698C'},
+            ];
+
+            new Chart(ctx, {
+                type:'line',
+                data:{
+                    labels,
+                    datasets: progs.map(p=>({
+                        label: p.label,
+                        data: sem2026.map(r=>r[p.key]),
+                        borderColor: p.color,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: p.color,
+                        fill: false,
+                        spanGaps: false
+                    }))
+                },
+                options:{
+                    responsive:true, maintainAspectRatio:false,
+                    plugins:{legend:{labels:{color:'#444',font:{size:10,weight:'bold'},padding:10,usePointStyle:true}}},
+                    scales:{
+                        y:{ticks:{color:'#777',callback:v=>v+'%'},grid:{color:'#e0dbd6'}},
+                        x:{ticks:{color:'#777',maxRotation:45,font:{size:9}},grid:{color:'#e0dbd6'}}
+                    }
+                }
+            });
+
+            // Table
+            const tb = document.getElementById('tableProgramasTV');
+            if (tb) {
+                tb.innerHTML = PROGRAMAS_TV.map(r => {
+                    const keys = ['grandesManhas','taABater','vivaATarde','naPlaca','reviva','zapNews','clubeZSab','clubeZDom','daJajao'];
+                    return `<tr><td><strong>${r.sem}</strong></td>${keys.map(k => `<td>${r[k] !== null ? r[k]+'%' : '—'}</td>`).join('')}</tr>`;
+                }).join('');
+            }
+        }
+
+        // ===== PENETRAÇÃO & ESTRATOS CHARTS =====
+        function initPenetracaoCharts() {
+            destroyChartOnCanvas('chartPenetracao');
+            const ctx = document.getElementById('chartPenetracao')?.getContext('2d');
+            if (ctx) {
+                new Chart(ctx, {
+                    type:'bar',
+                    data:{
+                        labels: PENETRACAO.map(r=>r.sem),
+                        datasets:[
+                            {label:'ZAP NOVELAS', data:PENETRACAO.map(r=>r.zapNovelas), backgroundColor:'#EDBA16'},
+                            {label:'ZAP VIVA', data:PENETRACAO.map(r=>r.zapViva), backgroundColor:'#C43771'},
+                        ]
+                    },
+                    options:{
+                        responsive:true, maintainAspectRatio:false,
+                        plugins:{legend:{labels:{color:'#444',font:{size:12,weight:'bold'}}}},
+                        scales:{
+                            y:{ticks:{color:'#777',callback:v=>v+'%'},grid:{color:'#e0dbd6'}},
+                            x:{ticks:{color:'#777',font:{size:9}},grid:{color:'#e0dbd6'}}
+                        }
+                    }
+                });
+            }
+
+            // Estratos table
+            const tbE = document.getElementById('tableEstratos');
+            if (tbE) {
+                tbE.innerHTML = ESTRATOS.map(r =>
+                    `<tr><td><strong>${r.sem}</strong></td><td style="font-weight:600;color:var(--accent)">${r.estrato}</td><td>${r.share !== null ? r.share+'%' : '—'}</td></tr>`
+                ).join('');
+            }
+
+            // Penetração table
+            const tbP = document.getElementById('tablePenetracao');
+            if (tbP) {
+                tbP.innerHTML = PENETRACAO.map(r =>
+                    `<tr><td><strong>${r.sem}</strong></td><td>${r.zapNovelas}%</td><td>${r.zapViva !== null ? r.zapViva+'%' : '—'}</td><td>${r.programa || '—'}</td></tr>`
+                ).join('');
+            }
+        }
+
         // ===== INIT =====
-        document.addEventListener('DOMContentLoaded', initCharts);
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+        });
     </script>
 </body>
 </html>
