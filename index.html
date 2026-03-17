@@ -1750,7 +1750,7 @@
             const rIG = pearsonCorrelation(shareValues, igAlcance.some(v => v > 0) ? igAlcance : [0,0,0,0]);
 
             document.getElementById('correlationFB').textContent = (rFB >= 0 ? '+' : '') + rFB.toFixed(3);
-            document.getElementById('correlationFB').style.color = rFB >= 0 ? '#52b788' : '#C43771';
+            document.getElementById('correlationFB').style.color = rFB >= 0 ? '#3498DB' : '#C43771';
             document.getElementById('correlationFBDesc').textContent = pearsonLabel(rFB) + (rFB >= 0 ? ' positiva' : ' negativa');
 
             const igHasData = igAlcance.some(v => v > 0);
@@ -1762,7 +1762,7 @@
                 if (igVals.length >= 2) {
                     const rIGreal = pearsonCorrelation(igShares, igVals);
                     document.getElementById('correlationIG').textContent = (rIGreal >= 0 ? '+' : '') + rIGreal.toFixed(3);
-                    document.getElementById('correlationIG').style.color = rIGreal >= 0 ? '#52b788' : '#C43771';
+                    document.getElementById('correlationIG').style.color = rIGreal >= 0 ? '#3498DB' : '#C43771';
                     document.getElementById('correlationIGDesc').textContent = pearsonLabel(rIGreal) + (rIGreal >= 0 ? ' positiva' : ' negativa') + ` (${igPeriods.join(', ')})`;
                 } else {
                     document.getElementById('correlationIG').textContent = 'N/A';
