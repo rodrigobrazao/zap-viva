@@ -1091,39 +1091,45 @@
         <!-- TAB 5: CORRELAÇÃO TV/SOCIAL -->
         <div class="tab-content" id="tab-4" data-print-title="Correlação TV / Social">
             <div class="chart-container">
-                <div class="chart-title">Correlação: Share TV vs Alcance Social</div>
-                <div class="chart-description">Análise de tendências paralelas entre audiências TV e alcance em redes sociais</div>
-                <div class="chart-wrapper" style="height: 380px;">
+                <div class="chart-title">Correlação: Share TV vs Alcance Social (Facebook e Instagram)</div>
+                <div class="chart-description">Análise de tendências paralelas entre audiências TV e alcance em redes sociais, discriminado por plataforma</div>
+                <div class="chart-wrapper" style="height: 400px;">
                     <canvas id="chartCorrelation"></canvas>
                 </div>
             </div>
 
-            <div class="correlation-card">
-                <div class="correlation-label">Coeficiente de Correlação (Pearson r)</div>
-                <div class="correlation-value" id="correlationValue">+0.312</div>
-                <div class="correlation-description">Correlação fraca a moderada positiva</div>
+            <div class="two-column">
+                <div class="correlation-card">
+                    <div class="correlation-label">Pearson r — Facebook vs Share TV</div>
+                    <div class="correlation-value" id="correlationFB"></div>
+                    <div class="correlation-description" id="correlationFBDesc"></div>
+                </div>
+                <div class="correlation-card">
+                    <div class="correlation-label">Pearson r — Instagram vs Share TV</div>
+                    <div class="correlation-value" id="correlationIG"></div>
+                    <div class="correlation-description" id="correlationIGDesc"></div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Dados por Período</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Período</th>
+                            <th>Share TV</th>
+                            <th>Alcance Facebook</th>
+                            <th>Alcance Instagram</th>
+                            <th>Alcance Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="correlationTableBody"></tbody>
+                </table>
             </div>
 
             <div class="chart-container">
                 <div class="chart-title">Análise da Correlação</div>
-                <div class="insight-box">
-                    <strong>Interpretação:</strong> O coeficiente de Pearson de +0.312 indica uma correlação fraca a moderada positiva entre share TV e alcance social. Isso significa que, em geral, períodos com maior share televisivo tendem a apresentar slightly maior alcance em redes sociais, mas a relação não é determinística.
-                </div>
-                <div class="insight-box">
-                    <strong>Janeiro 2025:</strong> Share TV: 9,3% | Alcance Social: 4.319.391
-                </div>
-                <div class="insight-box">
-                    <strong>Fevereiro 2025:</strong> Share TV: 9,0% | Alcance Social: 7.200.000
-                </div>
-                <div class="insight-box">
-                    <strong>Janeiro 2026:</strong> Share TV: 7,1% | Alcance Social: 2.177.544
-                </div>
-                <div class="insight-box">
-                    <strong>Fevereiro 2026:</strong> Share TV: 6,7% | Alcance Social: 6.825.000
-                </div>
-                <div class="insight-box">
-                    <strong>Conclusão:</strong> A correlação moderada sugere que factores externos (campanhas nas redes sociais, viralidade, dias da semana) exercem influência significativa no alcance, independentemente da audiência TV. Recomenda-se análise separada de campanhas específicas para validar drivers adicionais.
-                </div>
+                <div id="correlationConclusions"></div>
             </div>
         </div>
 
@@ -1590,36 +1596,76 @@
             });
         }
 
+        function pearsonCorrelation(x, y) {
+            const n = x.length;
+            const sumX = x.reduce((a, b) => a + b, 0);
+            const sumY = y.reduce((a, b) => a + b, 0);
+            const sumXY = x.reduce((t, xi, i) => t + xi * y[i], 0);
+            const sumX2 = x.reduce((t, xi) => t + xi * xi, 0);
+            const sumY2 = y.reduce((t, yi) => t + yi * yi, 0);
+            const num = n * sumXY - sumX * sumY;
+            const den = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+            return den === 0 ? 0 : num / den;
+        }
+
+        function pearsonLabel(r) {
+            const abs = Math.abs(r);
+            if (abs < 0.2) return 'Correlação muito fraca';
+            if (abs < 0.4) return 'Correlação fraca';
+            if (abs < 0.6) return 'Correlação moderada';
+            if (abs < 0.8) return 'Correlação forte';
+            return 'Correlação muito forte';
+        }
+
         function createCorrelationChart(ctx) {
             const periods = ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'];
             const shareValues = [9.3, 9.0, 7.1, 6.7];
-            const alcanceValues = [4319391, 7200000, 2177544, 6825000];
+            const fbAlcance = periods.map(p => SOCIAL_DATA[p].facebook.alcance);
+            const igAlcance = periods.map(p => SOCIAL_DATA[p].instagram.alcance);
 
-            new Chart(ctx, {
+            // Chart with 3 lines: FB, IG, Share TV
+            if (chartInstances['correlation']) chartInstances['correlation'].destroy();
+            chartInstances['correlation'] = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: periods,
                     datasets: [
                         {
-                            label: 'Alcance Social (Facebook + Instagram)',
-                            data: alcanceValues,
+                            label: 'Alcance Facebook',
+                            data: fbAlcance,
                             borderColor: '#00d4aa',
+                            backgroundColor: 'rgba(0,212,170,0.1)',
                             borderWidth: 3,
                             tension: 0.4,
-                            pointRadius: 5,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#00d4aa',
                             yAxisID: 'y',
-                            pointBackgroundColor: '#00d4aa'
+                            fill: true
+                        },
+                        {
+                            label: 'Alcance Instagram',
+                            data: igAlcance,
+                            borderColor: '#ff6b9d',
+                            backgroundColor: 'rgba(255,107,157,0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#ff6b9d',
+                            yAxisID: 'y',
+                            fill: true
                         },
                         {
                             label: 'Share TV (%)',
                             data: shareValues,
                             borderColor: '#ffd500',
                             borderWidth: 3,
-                            borderDash: [5, 5],
+                            borderDash: [8, 4],
                             tension: 0.4,
-                            pointRadius: 5,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#ffd500',
+                            pointStyle: 'rectRot',
                             yAxisID: 'y1',
-                            pointBackgroundColor: '#ffd500'
+                            fill: false
                         }
                     ]
                 },
@@ -1628,27 +1674,29 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' }, padding: 15 }
+                            labels: { color: '#f5f5f5', font: { size: 12, weight: 'bold' }, padding: 15, usePointStyle: true }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    if (ctx.dataset.yAxisID === 'y1') return `${ctx.dataset.label}: ${ctx.raw}%`;
+                                    return `${ctx.dataset.label}: ${formatNumber(ctx.raw)}`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
                             type: 'linear',
                             position: 'left',
-                            ticks: {
-                                color: '#888888',
-                                callback: function(v) { return formatNumber(v); }
-                            },
+                            ticks: { color: '#888888', callback: v => formatNumber(v) },
                             grid: { color: '#333' },
                             title: { display: true, text: 'Alcance', color: '#f5f5f5' }
                         },
                         y1: {
                             type: 'linear',
                             position: 'right',
-                            ticks: {
-                                color: '#888888',
-                                callback: function(v) { return v + '%'; }
-                            },
+                            ticks: { color: '#888888', callback: v => v + '%' },
                             grid: { drawOnChartArea: false },
                             title: { display: true, text: 'Share TV', color: '#f5f5f5' }
                         },
@@ -1659,6 +1707,63 @@
                     }
                 }
             });
+
+            // Calculate Pearson for FB and IG separately
+            const rFB = pearsonCorrelation(shareValues, fbAlcance);
+            const rIG = pearsonCorrelation(shareValues, igAlcance.some(v => v > 0) ? igAlcance : [0,0,0,0]);
+
+            document.getElementById('correlationFB').textContent = (rFB >= 0 ? '+' : '') + rFB.toFixed(3);
+            document.getElementById('correlationFB').style.color = rFB >= 0 ? '#00d4aa' : '#ff6b9d';
+            document.getElementById('correlationFBDesc').textContent = pearsonLabel(rFB) + (rFB >= 0 ? ' positiva' : ' negativa');
+
+            const igHasData = igAlcance.some(v => v > 0);
+            if (igHasData) {
+                // Only use periods with IG data for meaningful correlation
+                const igPeriods = periods.filter((_, i) => igAlcance[i] > 0);
+                const igVals = igAlcance.filter(v => v > 0);
+                const igShares = shareValues.filter((_, i) => igAlcance[i] > 0);
+                if (igVals.length >= 2) {
+                    const rIGreal = pearsonCorrelation(igShares, igVals);
+                    document.getElementById('correlationIG').textContent = (rIGreal >= 0 ? '+' : '') + rIGreal.toFixed(3);
+                    document.getElementById('correlationIG').style.color = rIGreal >= 0 ? '#00d4aa' : '#ff6b9d';
+                    document.getElementById('correlationIGDesc').textContent = pearsonLabel(rIGreal) + (rIGreal >= 0 ? ' positiva' : ' negativa') + ` (${igPeriods.join(', ')})`;
+                } else {
+                    document.getElementById('correlationIG').textContent = 'N/A';
+                    document.getElementById('correlationIGDesc').textContent = 'Dados insuficientes (apenas 1 período com Instagram)';
+                }
+            } else {
+                document.getElementById('correlationIG').textContent = 'N/A';
+                document.getElementById('correlationIG').style.color = '#888';
+                document.getElementById('correlationIGDesc').textContent = 'Sem dados de Instagram para Jan 2025 e Jan 2026';
+            }
+
+            // Populate table
+            const tbody = document.getElementById('correlationTableBody');
+            tbody.innerHTML = periods.map((p, i) => {
+                const total = fbAlcance[i] + igAlcance[i];
+                const bgColor = i % 2 === 0 ? '#1a1a1a' : '#242424';
+                return `<tr style="background:${bgColor}">
+                    <td><strong>${p}</strong></td>
+                    <td>${shareValues[i]}%</td>
+                    <td>${formatNumber(fbAlcance[i])}</td>
+                    <td>${igAlcance[i] > 0 ? formatNumber(igAlcance[i]) : '<span style="color:#555">—</span>'}</td>
+                    <td><strong>${formatNumber(total)}</strong></td>
+                </tr>`;
+            }).join('');
+
+            // Generate conclusions
+            const conclusions = document.getElementById('correlationConclusions');
+            let html = '';
+
+            html += `<div class="insight-box"><strong>Facebook:</strong> O coeficiente de Pearson de ${rFB >= 0 ? '+' : ''}${rFB.toFixed(3)} indica uma ${pearsonLabel(rFB).toLowerCase()} entre share TV e alcance Facebook. ${Math.abs(rFB) < 0.4 ? 'A relação é fraca, sugerindo que o alcance no Facebook é mais influenciado por factores como tipo de conteúdo, algoritmo e viralidade do que pela audiência televisiva.' : 'Existe uma relação significativa entre a audiência TV e o alcance no Facebook.'}</div>`;
+
+            html += `<div class="insight-box"><strong>Instagram:</strong> ${igHasData ? 'O Instagram apenas tem dados em Fevereiro (2025 e 2026). Com apenas 2 pontos de dados, a correlação estatística é limitada. No entanto, o alcance do Instagram em Fev 2025 (' + formatNumber(igAlcance[1]) + ') vs Fev 2026 (' + formatNumber(igAlcance[3]) + ') mostra ' + (igAlcance[3] < igAlcance[1] ? 'uma diminuição' : 'um aumento') + ', acompanhando a tendência de descida do share TV (' + shareValues[1] + '% → ' + shareValues[3] + '%).' : 'Sem dados de Instagram disponíveis para análise de correlação.'}</div>`;
+
+            html += `<div class="insight-box"><strong>Facebook vs Instagram:</strong> O Facebook domina o alcance total, representando ${periods.map((_, i) => fbAlcance[i] > 0 && (fbAlcance[i] + igAlcance[i]) > 0 ? Math.round(fbAlcance[i] / (fbAlcance[i] + igAlcance[i]) * 100) : null).filter(v => v !== null).join('%, ')}% do alcance total nos respectivos períodos. O Instagram complementa mas ainda representa uma fracção menor.</div>`;
+
+            html += `<div class="insight-box"><strong>Conclusão geral:</strong> A correlação entre audiência TV e redes sociais é mais evidente no Facebook. Factores como campanhas específicas, conteúdos virais e o algoritmo das plataformas exercem influência significativa no alcance social, independentemente do share televisivo. Com mais meses de dados, será possível validar estas tendências com maior significância estatística.</div>`;
+
+            conclusions.innerHTML = html;
         }
 
         function initSocialCharts(platform) {
