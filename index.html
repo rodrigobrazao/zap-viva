@@ -19,17 +19,19 @@
 
     <style>
         :root {
-            --black: #000000;
+            --black: #0a0a0a;
             --dark: #1a1a1a;
-            --grey: #888888;
+            --grey: #999999;
             --light: #f5f5f5;
             --white: #ffffff;
-            --accent: #ff4d00;
-            --teal: #00d4aa;
-            --yellow: #ffd500;
-            --pink: #ff6b9d;
-            --purple: #7c5cfc;
-            --blue: #00b4d8;
+            --accent: #C43771;
+            --accent-light: #E8698C;
+            --gold: #EDBA16;
+            --teal: #52b788;
+            --yellow: #EDBA16;
+            --pink: #C43771;
+            --purple: #9B59B6;
+            --blue: #3498DB;
             --green: #52b788;
         }
 
@@ -54,8 +56,8 @@
 
         /* ===== HEADER ===== */
         header {
-            background-color: var(--dark);
-            border-bottom: 2px solid var(--accent);
+            background: linear-gradient(135deg, #C43771, #a82d60);
+            border-bottom: 4px solid var(--gold);
             padding: 20px 0;
             margin-bottom: 30px;
             border-radius: 8px;
@@ -72,25 +74,25 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 2.2rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--gold);
             letter-spacing: 2px;
         }
 
         .header-left p {
             font-size: 0.95rem;
-            color: var(--grey);
+            color: rgba(255,255,255,0.8);
             margin-top: 4px;
         }
 
         .header-right {
             text-align: right;
             font-size: 0.85rem;
-            color: var(--grey);
+            color: rgba(255,255,255,0.8);
         }
 
         .header-right .updated {
             font-family: 'JetBrains Mono', monospace;
-            color: var(--accent);
+            color: var(--gold);
             font-weight: 600;
         }
 
@@ -118,12 +120,12 @@
 
         .tab-btn:hover {
             color: var(--light);
-            border-bottom-color: var(--accent);
+            border-bottom-color: var(--gold);
         }
 
         .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
+            color: var(--gold);
+            border-bottom-color: var(--gold);
         }
 
         .tab-content {
@@ -165,8 +167,8 @@
         }
 
         .subtab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
+            color: var(--gold);
+            border-bottom-color: var(--gold);
         }
 
         .subtab-content {
@@ -201,7 +203,7 @@
             left: 0;
             width: 4px;
             height: 100%;
-            background-color: var(--accent);
+            background: linear-gradient(180deg, var(--accent), var(--gold));
         }
 
         .kpi-label {
@@ -261,7 +263,7 @@
             text-align: center;
             margin-bottom: 25px;
             padding: 30px;
-            background: linear-gradient(135deg, var(--dark), #2a2a2a);
+            background: linear-gradient(135deg, var(--dark), #251520);
             border-radius: 8px;
             border: 1px solid #333;
         }
@@ -270,7 +272,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 3.5rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--gold);
             line-height: 1;
             margin-bottom: 10px;
         }
@@ -303,7 +305,7 @@
         }
 
         thead {
-            background-color: #222;
+            background-color: #1e1018;
             border-bottom: 2px solid var(--accent);
         }
 
@@ -400,11 +402,11 @@
             align-items: center;
             justify-content: center;
             font-family: 'JetBrains Mono', monospace;
-            box-shadow: 0 2px 6px rgba(255,77,0,0.4);
+            box-shadow: 0 2px 6px rgba(196,55,113,0.4);
         }
 
         .post-rank.top3 {
-            background: linear-gradient(135deg, #ff4d00, #ffd500);
+            background: linear-gradient(135deg, #C43771, #EDBA16);
             width: 32px;
             height: 32px;
             font-size: 0.9rem;
@@ -412,7 +414,7 @@
 
         .post-period {
             font-size: 0.7rem;
-            color: #00d4aa;
+            color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 4px;
@@ -529,7 +531,7 @@
 
         /* ===== BUTTONS ===== */
         button.btn {
-            background-color: var(--accent);
+            background-color: var(--gold);
             color: var(--black);
             border: none;
             padding: 10px 16px;
@@ -542,7 +544,7 @@
         }
 
         button.btn:hover {
-            background-color: #ff6b1a;
+            background-color: #d94485;
             transform: translateY(-2px);
         }
 
@@ -666,8 +668,8 @@
                 display: block;
                 font-size: 16pt;
                 font-weight: 800;
-                color: #ff4d00;
-                border-bottom: 2px solid #ff4d00;
+                color: #C43771;
+                border-bottom: 2px solid #C43771;
                 padding-bottom: 6px;
                 margin-bottom: 15px;
                 margin-top: 10px;
@@ -681,7 +683,7 @@
                 display: block;
                 font-size: 13pt;
                 font-weight: 700;
-                color: #00d4aa;
+                color: #EDBA16;
                 border-bottom: 1px solid #333;
                 padding-bottom: 4px;
                 margin-bottom: 12px;
@@ -1191,7 +1193,7 @@
 
     <script>
         // ===== DATA =====
-        const COLORS = ['#ff4d00','#00d4aa','#ffd500','#ff6b9d','#7c5cfc','#00b4d8','#52b788','#f4845f','#a78bfa','#38bdf8'];
+        const COLORS = ['#C43771','#EDBA16','#E8698C','#3498DB','#9B59B6','#52b788','#E67E22','#1ABC9C','#F39C12','#8E44AD'];
 
         const TV_DATA = {
             2023: { Jan:0.063, Fev:0.054, Mar:0.076, Abr:0.069, Mai:0.064, Jun:0.065, Jul:0.060, Ago:0.060, Set:0.066, Out:0.067, Nov:0.067, Dez:0.062 },
@@ -1433,8 +1435,8 @@
                         {
                             label: '2023',
                             data: Object.values(TV_DATA[2023]),
-                            borderColor: '#00d4aa',
-                            backgroundColor: 'rgba(0,212,170,0.1)',
+                            borderColor: '#EDBA16',
+                            backgroundColor: 'rgba(237,186,22,0.1)',
                             tension: 0.4,
                             fill: true,
                             pointRadius: 3
@@ -1442,8 +1444,8 @@
                         {
                             label: '2024',
                             data: Object.values(TV_DATA[2024]),
-                            borderColor: '#ffd500',
-                            backgroundColor: 'rgba(255,213,0,0.1)',
+                            borderColor: '#E8698C',
+                            backgroundColor: 'rgba(232,105,140,0.1)',
                             tension: 0.4,
                             fill: false,
                             pointRadius: 3
@@ -1451,8 +1453,8 @@
                         {
                             label: '2025',
                             data: Object.values(TV_DATA[2025]),
-                            borderColor: '#ff4d00',
-                            backgroundColor: 'rgba(255,77,0,0.1)',
+                            borderColor: '#C43771',
+                            backgroundColor: 'rgba(196,55,113,0.1)',
                             tension: 0.4,
                             fill: false,
                             pointRadius: 3
@@ -1493,12 +1495,12 @@
                     datasets: [{
                         label: 'Followers',
                         data: FOLLOWERS.map(f => f.value),
-                        borderColor: '#ff4d00',
-                        backgroundColor: 'rgba(255,77,0,0.15)',
+                        borderColor: '#C43771',
+                        backgroundColor: 'rgba(196,55,113,0.15)',
                         tension: 0.4,
                         fill: true,
                         pointRadius: 4,
-                        pointBackgroundColor: '#ff4d00'
+                        pointBackgroundColor: '#C43771'
                     }]
                 },
                 options: {
@@ -1526,7 +1528,7 @@
 
         function createYearlyShareLinesChart(ctx) {
             const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            const colorMap = { 2023: '#00d4aa', 2024: '#ffd500', 2025: '#ff4d00', 2026: '#ff6b9d' };
+            const colorMap = { 2023: '#EDBA16', 2024: '#E8698C', 2025: '#C43771', 2026: '#3498DB' };
 
             const datasets = [];
             [2023, 2024, 2025, 2026].forEach((year, idx) => {
@@ -1582,12 +1584,12 @@
                         {
                             label: '2024',
                             data: Object.values(TV_DATA[2024]),
-                            backgroundColor: '#ffd500'
+                            backgroundColor: '#EDBA16'
                         },
                         {
                             label: '2025',
                             data: Object.values(TV_DATA[2025]),
-                            backgroundColor: '#ff4d00'
+                            backgroundColor: '#C43771'
                         }
                     ]
                 },
@@ -1651,36 +1653,36 @@
                         {
                             label: 'Alcance Facebook',
                             data: fbAlcance,
-                            borderColor: '#00d4aa',
-                            backgroundColor: 'rgba(0,212,170,0.1)',
+                            borderColor: '#C43771',
+                            backgroundColor: 'rgba(196,55,113,0.1)',
                             borderWidth: 3,
                             tension: 0.4,
                             pointRadius: 6,
-                            pointBackgroundColor: '#00d4aa',
+                            pointBackgroundColor: '#C43771',
                             yAxisID: 'y',
                             fill: true
                         },
                         {
                             label: 'Alcance Instagram',
                             data: igAlcance,
-                            borderColor: '#ff6b9d',
-                            backgroundColor: 'rgba(255,107,157,0.1)',
+                            borderColor: '#E8698C',
+                            backgroundColor: 'rgba(232,105,140,0.1)',
                             borderWidth: 3,
                             tension: 0.4,
                             pointRadius: 6,
-                            pointBackgroundColor: '#ff6b9d',
+                            pointBackgroundColor: '#E8698C',
                             yAxisID: 'y',
                             fill: true
                         },
                         {
                             label: 'Share TV (%)',
                             data: shareValues,
-                            borderColor: '#ffd500',
+                            borderColor: '#EDBA16',
                             borderWidth: 3,
                             borderDash: [8, 4],
                             tension: 0.4,
                             pointRadius: 6,
-                            pointBackgroundColor: '#ffd500',
+                            pointBackgroundColor: '#EDBA16',
                             pointStyle: 'rectRot',
                             yAxisID: 'y1',
                             fill: false
@@ -1731,7 +1733,7 @@
             const rIG = pearsonCorrelation(shareValues, igAlcance.some(v => v > 0) ? igAlcance : [0,0,0,0]);
 
             document.getElementById('correlationFB').textContent = (rFB >= 0 ? '+' : '') + rFB.toFixed(3);
-            document.getElementById('correlationFB').style.color = rFB >= 0 ? '#00d4aa' : '#ff6b9d';
+            document.getElementById('correlationFB').style.color = rFB >= 0 ? '#52b788' : '#C43771';
             document.getElementById('correlationFBDesc').textContent = pearsonLabel(rFB) + (rFB >= 0 ? ' positiva' : ' negativa');
 
             const igHasData = igAlcance.some(v => v > 0);
@@ -1743,7 +1745,7 @@
                 if (igVals.length >= 2) {
                     const rIGreal = pearsonCorrelation(igShares, igVals);
                     document.getElementById('correlationIG').textContent = (rIGreal >= 0 ? '+' : '') + rIGreal.toFixed(3);
-                    document.getElementById('correlationIG').style.color = rIGreal >= 0 ? '#00d4aa' : '#ff6b9d';
+                    document.getElementById('correlationIG').style.color = rIGreal >= 0 ? '#52b788' : '#C43771';
                     document.getElementById('correlationIGDesc').textContent = pearsonLabel(rIGreal) + (rIGreal >= 0 ? ' positiva' : ' negativa') + ` (${igPeriods.join(', ')})`;
                 } else {
                     document.getElementById('correlationIG').textContent = 'N/A';
@@ -1822,14 +1824,14 @@
                         {
                             label: 'Nº de Posts',
                             data: posts,
-                            backgroundColor: '#ff4d00',
+                            backgroundColor: '#C43771',
                             yAxisID: 'y'
                         },
                         {
                             label: 'Média Gostos/Post',
                             data: avgLikes,
-                            borderColor: '#00d4aa',
-                            backgroundColor: 'rgba(0,212,170,0.3)',
+                            borderColor: '#EDBA16',
+                            backgroundColor: 'rgba(237,186,22,0.3)',
                             type: 'line',
                             tension: 0.4,
                             yAxisID: 'y1',
@@ -1878,6 +1880,7 @@
                         data: Object.values(types),
                         backgroundColor: COLORS,
                         borderColor: '#1a1a1a',
+
                         borderWidth: 2
                     }]
                 },
@@ -1910,7 +1913,7 @@
                     datasets: [{
                         label: 'Total Gostos',
                         data: data,
-                        backgroundColor: '#ff4d00'
+                        backgroundColor: '#C43771'
                     }]
                 },
                 options: {
@@ -1968,7 +1971,7 @@
                     datasets: [{
                         label: 'Total Gostos (FB + IG)',
                         data: sortedData,
-                        backgroundColor: '#ff4d00'
+                        backgroundColor: '#C43771'
                     }]
                 },
                 options: {
@@ -2030,7 +2033,7 @@
             const canvas = document.getElementById('chartProgramDistribution');
             const ctx = canvas.getContext('2d');
             const periods = ['Jan 2025', 'Fev 2025', 'Jan 2026', 'Fev 2026'];
-            const periodColors = ['#ff4d00', '#00d4aa', '#ffd500', '#ff6b9d'];
+            const periodColors = ['#C43771', '#EDBA16', '#E8698C', '#3498DB'];
 
             // Destroy existing chart if any
             if (chartInstances['programDist']) {
@@ -2069,6 +2072,7 @@
                             data: sorted.map(s => s.val),
                             backgroundColor: COLORS,
                             borderColor: '#1a1a1a',
+
                             borderWidth: 2
                         }]
                     },
@@ -2118,6 +2122,7 @@
                             data: data,
                             backgroundColor: periodColors,
                             borderColor: '#1a1a1a',
+
                             borderWidth: 2
                         }]
                     },
