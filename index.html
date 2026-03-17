@@ -1385,7 +1385,21 @@
         // ===== CHARTS =====
         let chartInstances = {};
 
+        function destroyChartOnCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+            }
+        }
+
         function initCharts() {
+            // Destruir todos os charts existentes antes de recriar
+            const chartIds = ['chartShareTV', 'chartFollowers', 'chartYearlyShareLines',
+                              'chartMonthlyComparison', 'chartCorrelation',
+                              'chartProgramEngagement', 'chartProgramDistribution'];
+            chartIds.forEach(destroyChartOnCanvas);
+
             const ctx0 = document.getElementById('chartShareTV')?.getContext('2d');
             const ctx1 = document.getElementById('chartFollowers')?.getContext('2d');
             const ctx2 = document.getElementById('chartYearlyShareLines')?.getContext('2d');
