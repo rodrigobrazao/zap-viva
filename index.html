@@ -1360,7 +1360,11 @@
 
             // Quando o tab Redes Sociais é activado, inicializar o sub-tab Facebook
             if (index === 2) {
-                setTimeout(() => initSocialCharts('facebook'), 50);
+                setTimeout(() => {
+                    initSocialCharts('facebook');
+                    // Forçar resize para recalcular dimensões dos canvas
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
             }
         }
 
@@ -1767,9 +1771,21 @@
         }
 
         function initSocialCharts(platform) {
-            const ctxPosts = document.getElementById(`chart${platform === 'facebook' ? 'FB' : 'IG'}PostsEngagement`)?.getContext('2d');
-            const ctxType = document.getElementById(`chart${platform === 'facebook' ? 'FB' : 'IG'}ContentType`)?.getContext('2d');
-            const ctxProgram = document.getElementById(`chart${platform === 'facebook' ? 'FB' : 'IG'}ByProgram`)?.getContext('2d');
+            const prefix = platform === 'facebook' ? 'FB' : 'IG';
+            const canvasIds = [`chart${prefix}PostsEngagement`, `chart${prefix}ContentType`, `chart${prefix}ByProgram`];
+
+            // Destruir charts existentes nos canvas antes de criar novos
+            canvasIds.forEach(id => {
+                const canvas = document.getElementById(id);
+                if (canvas) {
+                    const existing = Chart.getChart(canvas);
+                    if (existing) existing.destroy();
+                }
+            });
+
+            const ctxPosts = document.getElementById(canvasIds[0])?.getContext('2d');
+            const ctxType = document.getElementById(canvasIds[1])?.getContext('2d');
+            const ctxProgram = document.getElementById(canvasIds[2])?.getContext('2d');
 
             if (ctxPosts) createPostsEngagementChart(ctxPosts, platform);
             if (ctxType) createContentTypeChart(ctxType, platform);
